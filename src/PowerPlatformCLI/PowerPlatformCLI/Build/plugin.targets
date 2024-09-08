@@ -1,0 +1,30 @@
+<!--
+***********************************************************************************************
+OpenStrata.IdeDevOps.MSBuild
+powerpages.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights reserved.
+***********************************************************************************************
+-->
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<PropertyGroup>
+		<PushPluginTargets>$(PushPluginTargets);PluginPushUpdate</PushPluginTargets>
+	</PropertyGroup>
+
+	<Target Name='PluginPushUpdate' DependsOnTargets="Build;PacSelectOrg" Condition="'$(IsPipeline)'!='true'" >
+
+		<PropertyGroup>
+			<pluginfile>$(PackageOutputAbsolutePath)$(PackageId).$(PackageVersion).nupkg</pluginfile>
+		</PropertyGroup>
+
+		<Exec Command="pac plugin push --pluginId $(PluginId) --pluginFile $(pluginfile)" />
+
+	</Target>
+
+
+</Project>

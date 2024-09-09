@@ -1,0 +1,17 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell",
+      "args": [
+        "-NoExit",
+        "-encodedcommand",
+        "dAByAHkAIAAKAHsACgAuACAAIgBDADoAXABVAHMAZQByAHMAXABSAHkAYQBuAE0AaQBsAGwAZQB0AHQAXABBAHAAcABEAGEAdABhAFwATABvAGMAYQBsAFwAUAByAG8AZwByAGEAbQBzAFwATQBpAGMAcgBvAHMAbwBmAHQAIABWAFMAIABDAG8AZABlAFwAcgBlAHMAbwB1AHIAYwBlAHMAXABhAHAAcABcAG8AdQB0AFwAdgBzAFwAdwBvAHIAawBiAGUAbgBjAGgAXABjAG8AbgB0AHIAaQBiAFwAdABlAHIAbQBpAG4AYQBsAFwAYgByAG8AdwBzAGUAcgBcAG0AZQBkAGkAYQBcAHMAaABlAGwAbABJAG4AdABlAGcAcgBhAHQAaQBvAG4ALgBwAHMAMQAiAAoAfQAKAGMAYQB0AGMAaAAKAHsAfQAKAAoALgAgAC4AXABzAGgAbwByAHQAYwB1AHQAcwAuAHAAcwAxAAoA"
+      ]
+    }
+  },
+
+  "terminal.integrated.defaultProfile.windows": "PowerShell"
+
+}

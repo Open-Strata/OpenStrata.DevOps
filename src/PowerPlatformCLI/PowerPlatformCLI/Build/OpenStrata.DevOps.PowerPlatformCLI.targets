@@ -102,10 +102,6 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 	<Target Name="Debug" DependsOnTargets="$(DebugDependsOn)" />
 
-	<Target Name="EnsureDotOstrata">
-		<MakeDir Directories="$(DotOstrataPath)" Condition="!Exists('$(DotOstrataPath)')"  />
-	</Target>
-
 	<Target Name="EnsureIdeDevopsConfig" Condition="!Exists('$(IdeDevopsConfigPath)')">
 
 		<Warning Text="ide-devops.config.user does not exist.  Creating template file now." />
@@ -335,14 +331,14 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 	<PropertyGroup>
 
-		<StageLockFilePath>$(DotOstrataPath)stage.lck</StageLockFilePath>
-		<VersionLockFilePath>$(DotOstrataPath)version.lck</VersionLockFilePath>
-		<SubmitLockFilePath>$(DotOstrataPath)submit.lck</SubmitLockFilePath>
+		<StageLockFilePath>$(DotOstrataLockPath)stage.lck</StageLockFilePath>
+		<VersionLockFilePath>$(DotOstrataLockPath)version.lck</VersionLockFilePath>
+		<SubmitLockFilePath>$(DotOstrataLockPath)submit.lck</SubmitLockFilePath>
 		<CleanDependsOn>RemoveTagetControlLocks;$(CleanDependsOn)</CleanDependsOn>
 	</PropertyGroup>
 
 	<Target Name="RemoveTagetControlLocks" >
-		<Delete Files="$(DotOstrataPath)*.lck" />
+		<Delete Files="$(DotOstrataLockPath)*.lck" />
 	</Target>
 
 	<UsingTask TaskName="DeleteStaleTargetControlLockFile" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">

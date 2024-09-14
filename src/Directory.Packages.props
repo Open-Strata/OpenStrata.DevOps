@@ -16,8 +16,7 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 		<!--<DerivativeNamePrefix></DerivativeNamePrefix>-->
 
-		<Version>0.8.1</Version>
-
+		<Version>1.0.1</Version>
 		
 		<LocalPackageFeed>C:\Packages</LocalPackageFeed>
 
@@ -34,12 +33,14 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 		<GetPackageVersionDependsOn>SetVersionFromGitInfo; $(GetPackageVersionDependsOn)</GetPackageVersionDependsOn>
 
 		<GitVersion>false</GitVersion>
+		<UseGitInfoForVersions>false</UseGitInfoForVersions>		
 
 		<GitInfoReportImportance>high</GitInfoReportImportance>
 		<IncludeGitInfoInPackage>true</IncludeGitInfoInPackage>
-		<UseGitInfoForVersions>true</UseGitInfoForVersions>
-
 		<GitDefaultBranch>master</GitDefaultBranch>
+
+     	<NoWarn>NU5100;NU5111;NU5107;NU5110</NoWarn>
+	    <NugetNoWarn>NU1702,NU5100,NU5107,NU5111,NU5110</NugetNoWarn>
 		
 	</PropertyGroup>
 	

@@ -18,17 +18,17 @@
 
 	<Target Name="EnsureMSBuildPropsAndTargets" >
 
-		<Copy
+		<!-- <Copy
 				Condition="!Exists('Build\$(AssemblyName).props')"
 				SourceFiles="..\OpenStrata.Extension.MSBuild.Template.props"
 				DestinationFiles="Build\$(AssemblyName).props"
-				/>
+				/> -->
 
-		<Copy
+		<!-- <Copy
 				Condition="!Exists('Build\$(AssemblyName).targets')"
 				SourceFiles="..\OpenStrata.Extension.MSBuild.Template.targets"
 				DestinationFiles="Build\$(AssemblyName).targets"
-				/>
+				/> -->
 	</Target>
 
 

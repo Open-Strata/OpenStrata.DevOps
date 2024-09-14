@@ -29,8 +29,9 @@
 		
 		<IsTool>true</IsTool>
 
-		<IsMultiTargetingBuild Condition="'$(MSBuildProjectName)' == 'MSBuild.Deployment'">true</IsMultiTargetingBuild>
-		<IsMultiTargetingBuild Condition="'$(MSBuildProjectName)' == 'MSBuild'">true</IsMultiTargetingBuild>		
+		<IsMultiTargetingBuild>true</IsMultiTargetingBuild>
+
+
 		<!--<IsTransitiveDevelopmentDependency Condition="'$(MSBuildProjectName)' == 'MSBuild.Publisher'">true</IsTransitiveDevelopmentDependency>-->		
 		
 		<!--<IsTransitiveDevelopmentDependency Condition="'$(MSBuildProjectName)' == 'MSBuild.Stratify'">true</IsTransitiveDevelopmentDependency>-->
@@ -42,9 +43,7 @@
 
 		<SNExe>$(MSBuildProjectDirectory)\..\..\..\tools\sn.exe</SNExe>-->
 
-		<SkipOpenStrataMSBuildReference Condition="'$(MSBuildProjectName)' == 'MSBuild.Nuget'" >true</SkipOpenStrataMSBuildReference>
-		<SkipOpenStrataMSBuildReference Condition="'$(MSBuildProjectName)' == 'MSBuild'" >true</SkipOpenStrataMSBuildReference>
-		<SkipOpenStrataMSBuildReference Condition="'$(MSBuildProjectName)' == 'MSBuild.Publisher.New'" >true</SkipOpenStrataMSBuildReference>
+
 	</PropertyGroup>
 
 	<PropertyGroup Label="DocFxProperties">
@@ -76,8 +75,8 @@
 	</ItemGroup>
 		
 
-	<ItemGroup Condition="'$(MSBuildProjectName)' != 'MSBuild.Nuget'">
-		<PackageReference Include="OpenStrata.MSBuild.Nuget" Version="0.8.*" >
+	<ItemGroup>
+		<PackageReference Include="OpenStrata.MSBuild.Nuget" Version="1.*" >
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -91,7 +90,7 @@
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
 		</ProjectReference>-->
 
-		<PackageReferenceRequiredForInstall Include="OpenStrata.MSBuild" Version="0.8.*" />
+		<!-- <PackageReferenceRequiredForInstall Include="OpenStrata.MSBuild" Version="0.8.*" /> -->
 
 	</ItemGroup>
 
@@ -142,7 +141,8 @@
 		<!-- This property tells MSBuild where the root folder of the package's build assets should be. Because we are not a library package, we should not pack to 'lib'. Instead, we choose 'tasks' by convention. -->
 		<BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
 		<!-- NuGet does validation that libraries in a package are exposed as dependencies, but we _explicitly_ do not want that behavior for MSBuild tasks. They are isolated by design. Therefore we ignore this specific warning. -->
-		<NoWarn>NU5100</NoWarn>
+
+         <NoWarn>NU5100;NU5111;NU5107;NU5110</NoWarn>
 
 	</PropertyGroup>
 

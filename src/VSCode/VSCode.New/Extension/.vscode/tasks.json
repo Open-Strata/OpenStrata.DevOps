@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run init script on startup",
+      "options": {
+        "shell": {
+          "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "args": [ "-File" ]
+        }
+      },
+      "type": "shell",
+
+      "command": ".ostrata/scripts/init.ps1",
+      "windows": {
+        "command": ".ostrata\\scripts\\init.ps1"
+      },
+      "presentation": {
+        "reveal": "never",
+        "panel": "dedicated",
+        "echo": true
+      },
+
+
+      "runOptions": { "runOn": "folderOpen" }
+    }
+  ]
+}

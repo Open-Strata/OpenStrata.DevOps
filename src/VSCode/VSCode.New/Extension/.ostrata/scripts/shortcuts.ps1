@@ -2,6 +2,21 @@
 $shortcutspath = "$PSScriptRoot/shortcuts.ps1"
 $initpath = "$PSScriptRoot/init.ps1"
 
+
+function global:solution-name
+{
+
+    $solXmlFile = ".\solution\metadata\other\solution.xml"
+
+    $SolutionManifest = Select-Xml -Path $solXmlFile -XPath '/ImportExportXml/SolutionManifest' | Select-Object -ExpandProperty Node
+
+    $SolutionManifest.UniqueName
+
+    return
+
+}
+
+
 function global:Show-Shortcut-Note ([string] $note) {
     Write-Host $note -ForegroundColor Black -BackgroundColor Yellow
 }
@@ -20,31 +35,25 @@ if ($dotnetProcesses) {
 
 function global:add-plugin {
 
-    $solutionName = Get-Item -Path . | Select-Object -Property BaseName
+    $solutionName = global:solution-name
 
-    dotnet new osplugin -o .\plugin -n $solutionName.BaseName
-
-    dotnet sln add osplugin
+    dotnet new os-plugin -n $solutionName
 
 }
 
 function global:add-powerpages {
 
-    $solutionName = Get-Item -Path . | Select-Object -Property BaseName
+    $solutionName = global:solution-name
 
-    dotnet new ospowerpages -o .\PowerPages -n $solutionName.BaseName
-
-    dotnet sln add ospowerpages
+    dotnet new os-powerpages -n $solutionName
 
 }
 
 function global:add-doctemplates {
 
-    $solutionName = Get-Item -Path . | Select-Object -Property BaseName
+    $solutionName = global:solution-name
 
-    dotnet new osdoctemplates -o .\DocTemplates -n $solutionName.BaseName
-
-    dotnet sln add DocTemplates
+    dotnet new os-doctemplates -n $solutionName
 
 }
 

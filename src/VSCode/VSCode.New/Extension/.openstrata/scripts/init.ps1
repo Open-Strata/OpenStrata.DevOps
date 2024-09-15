@@ -47,7 +47,7 @@ if ($dotnetProcesses) {
 
 
 # Commands used frequently to refresh an environment to apply updates
-Remove-Item -Path .ostrata\**\*.lck -Force
+Remove-Item -Path .openstrata\**\*.lck -Force
 Remove-Item -Path **\bin\**\* -Recurse -Force
 Remove-Item -Path **\obj\**\* -Recurse -Force
 

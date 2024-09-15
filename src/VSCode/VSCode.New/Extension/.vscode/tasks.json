@@ -11,9 +11,9 @@
       },
       "type": "shell",
 
-      "command": ".ostrata/scripts/init.ps1",
+      "command": ".openstrata/scripts/init.ps1",
       "windows": {
-        "command": ".ostrata\\scripts\\init.ps1"
+        "command": ".openstrata\\scripts\\init.ps1"
       },
       "presentation": {
         "reveal": "never",

@@ -3,7 +3,7 @@ $shortcutspath = "$PSScriptRoot/shortcuts.ps1"
 $initpath = "$PSScriptRoot/init.ps1"
 
 
-function global:solution-name
+function global:get-solution-name
 {
 
     $solXmlFile = ".\solution\metadata\other\solution.xml"
@@ -35,7 +35,7 @@ if ($dotnetProcesses) {
 
 function global:add-plugin {
 
-    $solutionName = global:solution-name
+    $solutionName = global:get-solution-name
 
     dotnet new os-plugin -n $solutionName
 
@@ -43,7 +43,7 @@ function global:add-plugin {
 
 function global:add-powerpages {
 
-    $solutionName = global:solution-name
+    $solutionName = global:get-solution-name
 
     dotnet new os-powerpages -n $solutionName
 
@@ -51,7 +51,7 @@ function global:add-powerpages {
 
 function global:add-doctemplates {
 
-    $solutionName = global:solution-name
+    $solutionName = global:get-solution-name
 
     dotnet new os-doctemplates -n $solutionName
 
@@ -194,16 +194,16 @@ function global:maker {
 }
 
 function global:init {
-    Show-Shortcut-Note ".\.ostrata\scripts\init.ps1"  
+    Show-Shortcut-Note ".\.openstrata\scripts\init.ps1"  
 
-    .\.ostrata\scripts\init.ps1
+    .\.openstrata\scripts\init.ps1
 }
 
 function global:shortcuts {
 
-    Show-Shortcut-Note ". .\.ostrata\scripts\shortcuts.ps1"  
+    Show-Shortcut-Note ". .\.openstrata\scripts\shortcuts.ps1"  
 
-    . .\.ostrata\scripts\shortcuts.ps1
+    . .\.openstrata\scripts\shortcuts.ps1
 
 }
 
@@ -215,7 +215,7 @@ try
 catch
 {}
 
-. .\.ostrata\scripts\shortcuts.ps1
+. .\.openstrata\scripts\shortcuts.ps1
 
 "@
 

@@ -1,21 +1,22 @@
 ﻿
-$shortcutspath = "$PSScriptRoot/shortcuts.ps1"
-$initpath = "$PSScriptRoot/init.ps1"
-
 
 function global:get-solution-name
 {
 
     $solXmlFile = ".\solution\metadata\other\solution.xml"
 
+    if (-Not [System.IO.File]::Exists($solXmlFile))
+    {
+        Show-Shortcut-Note "solution.xml not found.  Running 'dotnet msbuild -t:AfterNew'" 
+        $buildResult = dotnet msbuild -t:AfterNew -noConLog
+        Write-Host $BuildResult
+    }
+
     $SolutionManifest = Select-Xml -Path $solXmlFile -XPath '/ImportExportXml/SolutionManifest' | Select-Object -ExpandProperty Node
 
-    $SolutionManifest.UniqueName
-
-    return
+    return $SolutionManifest.UniqueName
 
 }
-
 
 function global:Show-Shortcut-Note ([string] $note) {
     Write-Host $note -ForegroundColor Black -BackgroundColor Yellow
@@ -71,23 +72,6 @@ function global:unpackdocs {
     dotnet msbuild -t:UnpackDocs
 }
 
-function global:export {
-    Show-Shortcut-Note "dotnet restore" 
-    Show-Shortcut-Note "dotnet msbuild -t:Export" 
-
-    killdotnet
-
-    dotnet restore
-    dotnet msbuild -t:Export
-}
-
-function global:import {
-    Show-Shortcut-Note "dotnet restore" 
-    Show-Shortcut-Note "dotnet msbuild -t:Import" 
-    dotnet restore
-    dotnet msbuild -t:Build -t:Import
-}
-
 function global:testtarget {
     Show-Shortcut-Note "dotnet restore" 
     Show-Shortcut-Note "dotnet msbuild -t:TestTarget" 
@@ -95,28 +79,7 @@ function global:testtarget {
     dotnet msbuild -t:TestTarget
 }
 
-function global:hello {
-    Show-Shortcut-Note "hello" 
-}
-function global:deploy {
-    Show-Shortcut-Note "dotnet restore" 
-    Show-Shortcut-Note "dotnet msbuild -t:Build -t:Deploy"
 
-    killdotnet
-
-    dotnet restore
-    dotnet msbuild -t:Build -t:Deploy
-}
-
-function global:publish {
-    Show-Shortcut-Note "dotnet restore" 
-    Show-Shortcut-Note "dotnet msbuild -t:Build -t:Publish"
-
-    killdotnet
-
-    dotnet restore
-    dotnet msbuild -t:Build -t:Publish
-}
 
 function global:build {
     Show-Shortcut-Note "dotnet msbuild"
@@ -133,45 +96,23 @@ function global:restore {
     dotnet restore
 }
 
-function global:pushplugin {
-    Show-Shortcut-Note "git add plugin/*"
-    Show-Shortcut-Note "git commit -m "commit to pushplugin""
-    #Show-Shortcut-Note "dotnet msbuild"
-    Show-Shortcut-Note "dotnet msbuild -t:PushPlugin"
-
-    killdotnet
-
-    dotnet restore
-    git add plugin/*
-    git commit -m "commit to pushplugin"
-    #dotnet msbuild
-    dotnet msbuild -t:Build -t:PushPlugin
+function global:remove-locks {
+    Show-Shortcut-Note "Remove-Item -Path .openstrata\**\*.lck -Force"  
+    Remove-Item -Path .openstrata\**\*.lck -Force
 }
 
-function global:dev2qa {
-    #Show-Shortcut-Note "dotnet msbuild"
-    Show-Shortcut-Note "git push origin dev:qa"
-    git push origin dev:qa
-    git pull origin qa
-}
+function global:deep-clean{
 
-function global:dev2uat {
-    #Show-Shortcut-Note "dotnet msbuild"
-    Show-Shortcut-Note "git push origin dev:uat"
-    git push origin dev:uat
-    git pull origin uat
-}
+    Show-Shortcut-Note "killdotnet"  
+    global:killdotnet
 
-function global:cmt {
-    Show-Shortcut-Note "pac tool cmt"      
+    global:remove-locks
 
-    pac tool cmt
-}
+    Show-Shortcut-Note "Remove-Item -Path **\bin\**\* -Recurse -Force"  
+    Remove-Item -Path **\bin\**\* -Recurse -Force
 
-function global:prt {
-    Show-Shortcut-Note "pac tool prt"   
-
-    pac tool prt
+    Show-Shortcut-Note "Remove-Item -Path **\obj\**\* -Recurse -Force"      
+    Remove-Item -Path **\obj\**\* -Recurse -Force
 }
 
 function global:help {
@@ -181,31 +122,74 @@ function global:help {
     dotnet msbuild -t:Help
 }
 
-function global:admin {
-    Show-Shortcut-Note "pac tool admin"  
+function global:os-clear 
+{
 
-    pac tool admin
-}
+    $excluded = @("openstrata.net.sdk", "openstrata.build.notargets", "openstrata.msbuild.nuget")
 
-function global:maker {
-    Show-Shortcut-Note "pac tool maker"  
+    $packageDirs = (dotnet nuget locals global-packages --list) -replace 'global-packages: ', '' 
 
-    pac tool maker
+    Show-Shortcut-Note "Clearing OpenStrata From Nuget Global-Packages located at $packageDirs"
+
+    Get-ChildItem -Path $packageDirs -Filter openstrata* -Directory | Where-Object { $_.Name -notin $excluded } | Remove-Item -Force -Recurse
+
 }
 
 function global:init {
     Show-Shortcut-Note ".\.openstrata\scripts\init.ps1"  
 
-    .\.openstrata\scripts\init.ps1
+    .$PSScriptRoot\init.ps1
 }
 
 function global:shortcuts {
 
-    Show-Shortcut-Note ". .\.openstrata\scripts\shortcuts.ps1"  
+    Show-Shortcut-Note ".$PSScriptRoot\shortcuts.ps1"  
 
-    . .\.openstrata\scripts\shortcuts.ps1
+    .$PSScriptRoot\shortcuts.ps1
 
 }
+
+function global:os-update {
+    param
+    (
+        [string] $version
+    )
+
+    $solutionName = global:get-solution-name
+
+    Show-Shortcut-Note "global:os-clear" 
+    global:os-clear
+
+    Show-Shortcut-Note "dotnet new update"
+    dotnet new update
+
+    if ($PSBoundParameters.ContainsKey('version'))
+    {
+        Show-Shortcut-Note "dotnet new os-essentials -n $solutionName -ov $version --force"
+        dotnet new os-essentials -n $solutionName -ov $version --force
+        
+        Show-Shortcut-Note "dotnet new os-props -n $solutionName -ov $version --force"
+        dotnet new os-props -n $solutionName -ov $version --force
+    }
+    else
+    {
+        Show-Shortcut-Note "dotnet new os-essentials -n $solutionName --force"
+        dotnet new os-essentials -n $solutionName --force
+    }
+    Show-Shortcut-Note "dotnet new os-vscode -n $solutionName --force"
+    dotnet new os-vscode -n $solutionName --force
+
+    Show-Shortcut-Note "dotnet restore"
+    dotnet restore
+
+    Show-Shortcut-Note "dotnet msbuild -t:AfterNew"
+    dotnet msbuild -t:AfterNew
+
+    Show-Shortcut-Note "shortcuts"
+    global:shortcuts
+
+}
+
 
 $global:ostrataTerminalStartupCommand =  @"
 try 
@@ -227,7 +211,15 @@ function global:getvsendcodedcommand {
 
 }
 
+if ([System.IO.File]::Exists("$PSScriptRoot\git-shortcuts.ps1"))
+{
+  .$PSScriptRoot\git-shortcuts.ps1
+}
 
+if ([System.IO.File]::Exists("$PSScriptRoot\pac-shortcuts.ps1"))
+{
+  .$PSScriptRoot\pac-shortcuts.ps1
+}
 
 if ([System.IO.File]::Exists("shortcuts-local.ps1"))
 {

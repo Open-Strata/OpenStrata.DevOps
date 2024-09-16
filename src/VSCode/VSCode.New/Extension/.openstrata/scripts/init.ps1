@@ -1,16 +1,25 @@
 # Terminate all 'dotnet' processes
 
+# Use shortcut script methods...
+.$PSScriptRoot\shortcuts.ps1
 
-
-$dotnetProcesses = Get-Process -Name "dotnet" -ErrorAction SilentlyContinue
- 
-if ($dotnetProcesses) {
-    Write-Host "Stopping all 'dotnet' processes..."
-    $dotnetProcesses | Stop-Process
-    Write-Host "All 'dotnet' processes have been stopped."
-} else {
-    Write-Host "No 'dotnet' processes found."
+if ([System.IO.File]::Exists("$PSScriptRoot\git-init.ps1"))
+{
+  .$PSScriptRoot\git-init.ps1
 }
+
+if ([System.IO.File]::Exists("$PSScriptRoot\pac-init.ps1"))
+{
+  .$PSScriptRoot\pac-init.ps1
+}
+
+# Purge items preventing a clean initialization.
+global:deep-clean
+
+# Get updates
+global:os-update
+
+
 
 # Checkout to the 'dev' branch and pull the latest changes if necessary
 #  $currentBranch = git rev-parse --abbrev-ref HEAD
@@ -45,19 +54,3 @@ if ($dotnetProcesses) {
 #      pac auth create -ci UsGovHigh -n ostratadevtest
 #  }
 
-
-# Commands used frequently to refresh an environment to apply updates
-Remove-Item -Path .openstrata\**\*.lck -Force
-Remove-Item -Path **\bin\**\* -Recurse -Force
-Remove-Item -Path **\obj\**\* -Recurse -Force
-
-dotnet new update
-dotnet new os-essentials --force
-dotnet new os-vscode --force
-
-dotnet nuget locals all -c
-dotnet restore
-
-# Uncomment the following lines once their corresponding tasks are completed
-dotnet msbuild -t:Refresh
-dotnet restore

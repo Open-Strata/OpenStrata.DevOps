@@ -27,6 +27,9 @@
 		<UseGitInfoForVersions>true</UseGitInfoForVersions>
 		<IncludeGitInfoInPackage>true</IncludeGitInfoInPackage>
 
+
+		<DashDashForce>--force</DashDashForce>
+
 	</PropertyGroup>
 
 
@@ -42,21 +45,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="DevopsFiles\" />
-		<Folder Include="DevopsFiles\" />
-		<Folder Include="DevopsTemplates\" />
-		<Folder Include="SpawnRepo\" />
-		<Folder Include="DevopsTemplates\" />
+		<Folder Include="Extension\" />
 	</ItemGroup>
 
 
 	<ItemGroup>
 
-		<Content Include="DevopsFiles\**\*" PackagePath="\content\DevopsFiles\" />
-		<Content Include="SpawnRepo\**\*" PackagePath="\content\SpawnRepo\" />
-		<Content Include="AddExtension\**\*" PackagePath="\content\AddExtension\" />
-		<Content Include="DevopsTemplates\**\*" PackagePath="\content\DevopsTemplates\" />
-
+		<Content Include="Extension\**\*" PackagePath="\content\AddExtension\" />
 
 		<EmbeddedResource Remove="$(RemoveItems)" />
 		<None Remove="$(RemoveItems)" />
@@ -92,13 +87,13 @@
 		<PackageIconUrl />
 	</PropertyGroup>
 
-	<Target Name="TemplatesAfterPack" AfterTargets="Pack" DependsOnTargets="MoveNugetPackageToLocalPackageFeed">
+	<!-- <Target Name="TemplatesAfterPack" AfterTargets="Pack" DependsOnTargets="MoveNugetPackageToLocalPackageFeed">
 
 		<Exec Command="dotnet new uninstall $(PackageId)" IgnoreExitCode="true" />
 
-		<Exec Command="dotnet new install $(NugetFileAbsolutePath) --force" />
+		<Exec Command="dotnet new install $(NugetFileAbsolutePath) $(DashDashForce)" />
 
-	</Target>	
-	
+	</Target>	 -->
+
 
 </Project>

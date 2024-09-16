@@ -4,15 +4,15 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<PackageType>Template</PackageType>
 
-		<AssemblyName>OpenStrata.Devops.VSCode.New</AssemblyName>
-		<RootNamespace>OpenStrata.Devops.VSCode.New</RootNamespace>
+		<AssemblyName>OpenStrata.Devops.Git.New</AssemblyName>
+		<RootNamespace>OpenStrata.Devops.Git.New</RootNamespace>
 
 
 		<!--<Version>0.1.17</Version>
 	  <PackageVersion>$(Version)-Beta</PackageVersion>-->
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<PackageId>OpenStrata.Devops.VSCode.New</PackageId>
-		<Title>OpenStrata.Devops.VSCode Templates</Title>
+		<PackageId>OpenStrata.Devops.Git.New</PackageId>
+		<Title>OpenStrata.Devops.Git Templates</Title>
 		<Description>Templates to use when creating extensions to OpenStrata.</Description>
 		<PackageTags>dotnet-new;OpenStrata;PowerPlatform;PowerApps;Dataverse;CDS;CommonDataService;Dynamics365;D365;XRM;CRM;Dynamics</PackageTags>
 
@@ -53,11 +53,6 @@
 	<ItemGroup>
 
 		<Content Include="Extension\**\*" PackagePath="\content\Extension\" />
-		<Content Include="..\..\Git\Git.New\Extension\**\*" PackagePath="\content\Extension\" />	
-		<!-- <Content Include="..\..\Git\Git.New\Extension\**\*" Exclude="..\..\Git\Git.New\Extension\.template.config\*"  PackagePath="\content\Extension\" />	 -->
-		<Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\**\*" PackagePath="\content\Extension\" />			
-		<!-- <Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\**\*" Exclude="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\.template.config\*"  PackagePath="\content\Extension\" />	 -->
-
 		<Content Include="Spawn\**\*" PackagePath="\content\Spawn\" />
 		<Content Include="Templates\**\*" PackagePath="\content\Templates\" />
 
@@ -89,7 +84,7 @@
 		<Authors>OpenStrata Initiative</Authors>
 		<Copyright>Copyright (c)</Copyright>
 		<Company>Open Strata Initiative</Company>
-		<Product>OpenStrata.Devops.VSCode Templates</Product>
+		<Product>OpenStrata.Devops.Git Templates</Product>
 		<!--<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>-->
 		<PackageLicenseExpression>APSL-2.0</PackageLicenseExpression>
 		<PackageIcon>ICON.png</PackageIcon>

@@ -1,0 +1,23 @@
+# build.yml
+
+parameters:
+- name: wh_payload
+  type: object
+  default:
+- name: Stage
+  type: string
+  default: not-specified
+- name: Action
+  type: string
+  default: not-specified  
+
+steps:
+- script: echo Running build.yml
+
+- task: MSBuild@1
+  inputs:
+    solution: $(BuildSolutionPath)
+    msbuildArchitecture: 'x64'
+    configuration: $(BuildConfiguration)
+    msbuildArguments: -t:PipelineInit -t:Build -p:Stage=${{ parameters.Stage }} -p:EnvDevopsAction=${{ parameters.Action }}
+  displayName: MSBuild -t:PipelineInit -t:Build -p:Stage=${{ parameters.Stage }}

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "OpenStrata",
+  "classifications": [ "Common", "OpenStrata", "Webhook", "Templates", "Version Control" ],
+  "identity": "OpenStrata.DevOps.AzurePipelines.Webhook",
+  "name": "OpenStrata.DevOps.AzurePipelines Webhook Templates",
+  "shortName": "os-azdo-wh",
+  "sourceName": "OstrataTemplate.1",
+  "symbols": {
+    "az-devops-repo": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "repoName.1",
+      "defaultValue": "$(name{-VALUE-FORMS-}safe_namespace)"
+    },
+    "az-devops-project": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "project.1",
+      "forms" : {"global":["safename"]}
+    },
+    "RepoName": {
+      "type": "generated",
+      "generator": "coalesce",
+      "parameters": {
+        "sourceVariableName": "az-devops-repo",
+        "fallbackVariableName": "name"
+      },
+      "replaces": "repoName._1"
+    } ,
+    "ProjectName": {
+      "type": "generated",
+      "generator": "coalesce",
+      "parameters": {
+        "sourceVariableName": "az-devops-project",
+        "fallbackVariableName": "RepoName"
+      },
+      "replaces": "project._1"
+    } 
+    },
+
+    "forms": {
+      "uc": {
+        "identifier": "upperCase"
+      },
+      "safe_namespace": {
+          "identifier": "safe_namespace"
+      }      
+    }
+
+
+
+}

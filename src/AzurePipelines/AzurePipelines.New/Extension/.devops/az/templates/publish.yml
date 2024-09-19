@@ -1,0 +1,21 @@
+# publish.yml
+
+parameters:
+  - name: wh_payload
+    type: object
+    default:
+  - name: Stage
+    type: string
+    default: not-specified
+
+steps:
+- script: echo Running publish.yml
+
+- task: MSBuild@1
+  inputs:
+    solution: $(BuildSolutionPath)
+    msbuildArchitecture: 'x64'
+    configuration: $(BuildConfiguration)
+    msbuildArguments: -t:Push -p:Stage=${{ parameters.Stage }}
+  displayName:  -t:Push  -p:Stage=${{ parameters.Stage }}
+

@@ -1,0 +1,24 @@
+trigger: none
+pr: none
+pool:
+  vmImage: 'windows-latest'
+
+resources:
+  webhooks:
+    - webhook: OJAGLegalAssistanceInstaller
+      connection: OJAGLegalAssistanceInstaller
+      filters:
+        - path: solutionName
+          value: OJAGLegalAssistanceInstaller
+        - path: branch
+          value: qa
+
+name: $(Date:yyyyMMdd).$(Rev:r)_${{ parameters.OJAGLegalAssistanceInstaller.branch}}_${{ parameters.OJAGLegalAssistanceInstaller.action}}
+
+extends:
+  template: envdevops.yml
+  parameters:
+    wh_payload:  ${{ parameters.OJAGLegalAssistanceInstaller }}
+                           
+
+    

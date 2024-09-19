@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "OpenStrata",
+  "classifications": [ "Common", "OpenStrata", "Spawn", "Templates", "Version Control" ],
+  "identity": "OpenStrata.DevOps.AzurePipelines.Spawn",
+  "name": "OpenStrata.DevOps.AzurePipelines Spawn Repo Script",
+  "shortName": "os-azdo-spawn",
+  "sourceName": "OstrataTemplate.1",
+  "symbols": {
+    "az-devops-project": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "project.1"
+    },
+    "az-devops-repo": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "repoName.1"
+    }}
+  }

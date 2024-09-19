@@ -1,0 +1,254 @@
+trigger: none
+pr: none
+
+parameters:
+  - name: SolutionName
+    type: string
+    default: $(Build.Repository.Name)
+  - name: PublisherUniqueName
+    type: string
+  - name: PublisherPrefix
+    type: string
+  - name: ALMNugetFeed
+    type: string
+    default: ALMRestoreFeed.1
+  - name: ALMDotNetTempates
+    type: string
+    default: OpenStrata.NET.Templates
+  - name: InitialVersionTag
+    type: string
+    default: 1.0
+  - name: DevBranchName
+    type: string
+    default: dev    
+  - name: AddPluginProject
+    displayName: Add Plugin Project
+    type: string
+    default: no
+    values:
+    - yes
+    - no
+  - name: AddDocTemplateProject
+    displayName: Add Document Templates Project
+    type: string
+    default: no
+    values:
+    - yes
+    - no    
+  - name: AddPowerPagesProject
+    displayName: Add Legacy Power Pages Project
+    type: string
+    default: no
+    values:
+    - yes
+    - no  
+  - name: ExportIfExists
+    displayName: Export Existing Solution If it Exists.
+    type: string
+    default: no
+    values:
+    - yes
+    - no      
+  - name: Deploy2Dev
+    displayName: Deploy to a dev environment.
+    type: string
+    default: no
+    values:
+    - yes
+    - no       
+  - name: Environment
+    displayName: Power Platform Environment URL
+    type: string
+    default:  $(Environment)
+  - name: ppspn_connection
+    displayName: Power Platform Service Connection
+    type: string
+    default: $(ppspn_connection)
+
+pool:
+  vmImage: windows-latest
+
+steps:
+
+- checkout: self
+  persistCredentials: true
+  clean: true
+  fetchDepth: 0
+  fetchTags: true
+
+- task: NuGetToolInstaller@1
+
+- task: NuGetAuthenticate@1
+  inputs:
+    forceReinstallCredentialProvider: true
+
+- pwsh: |
+        echo 'dotnet new install ${{ parameters.ALMDotNetTempates }} --nuget-source ${{ parameters.ALMNugetFeed }}'
+        dotnet new install ${{ parameters.ALMDotNetTempates }} --nuget-source ${{ parameters.ALMNugetFeed }}
+        echo 'new ojagdotnet -n ${{ parameters.SolutionName }} -pn ${{ parameters.PublisherUniqueName }} -pp ${{ parameters.PublisherPrefix }}'   
+        dotnet new ojagdotnet -n ${{ parameters.SolutionName }} -pn ${{ parameters.PublisherUniqueName }} -pp ${{ parameters.PublisherPrefix }}
+        echo 'new ojagdevops -n ${{ parameters.SolutionName }} --force'
+        dotnet new ojagdevops -n ${{ parameters.SolutionName }} --force
+        echo 'new ojagdevopstemplates -n ${{ parameters.SolutionName }} --force'
+        dotnet new ojagdevopstemplates -n ${{ parameters.SolutionName }} --force        
+        echo 'new ojaggitignore -n ${{ parameters.SolutionName }} --force'        
+        dotnet new ojaggitignore -n ${{ parameters.SolutionName }} --force
+
+        if ('${{ parameters.SolutionName }}' -ne 'OjagEnvironmentDevops'){
+            dotnet add solution package OjagEnvironmentDevops.Strati -v "1.*" --no-restore
+        }        
+  displayName: Install ALM Templates
+  workingDirectory: '$(Build.SourcesDirectory)'
+
+- ${{ if eq(parameters.AddPluginProject, 'yes') }}:
+  - pwsh: |
+          dotnet new ojagplugin -o .\plugin -n ${{ parameters.SolutionName }}
+          dotnet sln add plugin      
+    displayName: Adding Plugin Project
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- ${{ if eq(parameters.AddDocTemplateProject, 'yes') }}:
+  - pwsh: |
+          dotnet new ojagdoctemplates -o .\DocTemplates -n ${{ parameters.SolutionName }}
+          dotnet sln add DocTemplates      
+    displayName: Adding DocTemplates Project
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- ${{ if eq(parameters.AddPowerPagesProject, 'yes') }}:
+  - pwsh: |
+          dotnet new ojagpowerpages -o .\PowerPages -n ${{ parameters.SolutionName }}
+          dotnet sln add PowerPages      
+    displayName: Adding PowerPages Project
+    workingDirectory: '$(Build.SourcesDirectory)'
+
+- task: MSBuild@1
+  inputs:
+    solution: '*.sln'
+    msbuildArchitecture: 'x64'
+    configuration: Debug
+    msbuildArguments: -t:restore -p:WithEnvDevops=true
+  displayName: MSBuild -t:restore    
+
+- script: |
+
+    rm azure-pipelines.yml
+
+    git config user.email "VssAdministrator@fv-az843-373.(none)"
+    git config user.name "VssAdministrator" 
+
+    git switch -C $(Build.SourceBranchName) --progress -f             
+
+    git tag ${{ parameters.InitialVersionTag }}
+    git push origin ${{ parameters.InitialVersionTag }}
+
+    exit 0
+
+  workingDirectory: '$(Build.SourcesDirectory)'
+  displayName: Initial Commit of ${{ parameters.SolutionName }}
+
+- task: MSBuild@1
+  inputs:
+    solution: '*.sln'
+    msbuildArchitecture: 'x64'
+    configuration: Debug
+  displayName: Building Dotnet Solution
+  
+- script: |
+
+      echo "rm -r --cached ."
+      git rm -r --cached .
+
+      echo "git add --all . "      
+      git add --all . 
+
+      git commit -m "Initial Commit of ${{ parameters.SolutionName }}" 
+
+      git push --set-upstream origin $(Build.SourceBranchName)
+
+      #git fetch --unshallow
+      #git fetch origin
+
+      git push origin $(Build.SourceBranchName):${{ parameters.DevBranchName }}
+
+      exit 0
+
+  workingDirectory: '$(Build.SourcesDirectory)'
+  displayName: Initial Commit of ${{ parameters.SolutionName }}
+
+- ${{ if or(eq(parameters.ExportIfExists, 'yes'),eq(parameters.Deploy2Dev, 'yes')) }}:
+  - task: PowerPlatformToolInstaller@2
+    inputs:
+      DefaultVersion: true
+      AddToolsToPath: true
+
+- ${{ if eq(parameters.ExportIfExists, 'yes') }}:
+  - script: |
+       git checkout ${{ parameters.DevBranchName }}
+       git pull origin ${{ parameters.DevBranchName }}
+       exit 0
+    workingDirectory: '$(Build.SourcesDirectory)'
+    displayName: Commit of ${{ parameters.SolutionName }} export.
+
+  - task: PowerPlatformPublishCustomizations@2
+    inputs:
+      authenticationType: 'PowerPlatformSPN'
+      PowerPlatformSPN: '${{ parameters.ppspn_connection }}'
+      Environment: '${{ parameters.Environment }}'
+      AsyncOperation: true
+      MaxAsyncWaitTime: '60'
+  - task: PowerPlatformExportSolution@2
+    inputs:
+      authenticationType: 'PowerPlatformSPN'
+      PowerPlatformSPN: '${{ parameters.ppspn_connection }}'
+      Environment: '${{ parameters.Environment}}'
+      SolutionName: '${{ parameters.SolutionName}}'
+      SolutionOutputFile: '$(Agent.Workfolder)/exportStaging/${{ parameters.SolutionName}}_managed.zip'
+      Managed: true
+      AsyncOperation: true
+      MaxAsyncWaitTime: '60'
+  - task: PowerPlatformExportSolution@2
+    inputs:
+      authenticationType: 'PowerPlatformSPN'
+      PowerPlatformSPN: '${{ parameters.ppspn_connection }}'
+      Environment: '${{ parameters.Environment}}'
+      SolutionName: '${{ parameters.SolutionName}}'
+      SolutionOutputFile: '$(Agent.Workfolder)/exportStaging/${{ parameters.SolutionName}}.zip'
+      Managed: false
+      AsyncOperation: true
+      MaxAsyncWaitTime: '60'
+  - task: PowerPlatformUnpackSolution@2
+    inputs:
+      SolutionInputFile: '$(Agent.Workfolder)/exportStaging/${{ parameters.SolutionName}}.zip'
+      SolutionTargetFolder: '$(Build.SourcesDirectory)/Solution/Metadata'
+      SolutionType: 'Both'
+
+  - script: |
+        echo "rm -r --cached ."
+        git rm -r --cached .
+
+        echo "git add --all . "      
+        git add --all . 
+
+        git commit -m "Commit of ${{ parameters.SolutionName }} export." 
+
+        git push --set-upstream origin ${{ parameters.DevBranchName }}
+
+        exit 0
+    workingDirectory: '$(Build.SourcesDirectory)'
+    displayName: Commit of ${{ parameters.SolutionName }} export.
+
+  - task: MSBuild@1
+    inputs:
+      solution: '*.sln'
+      msbuildArchitecture: 'x64'
+      configuration: Debug
+    displayName: MSBuild (Processing Export Results)   
+    
+- ${{ if eq(parameters.Deploy2Dev, 'yes') }}:
+  - task: PowerPlatformDeployPackage@2
+    inputs:
+      authenticationType: 'PowerPlatformSPN'
+      PowerPlatformSPN: '${{ parameters.ppspn_connection }}'
+      Environment: '${{ parameters.Environment}}'
+      PackageFile: '$(Build.SourcesDirectory)\package\bin\Debug\package.zip'
+      logConsole: true

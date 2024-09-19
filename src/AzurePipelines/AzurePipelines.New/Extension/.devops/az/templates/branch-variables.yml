@@ -1,0 +1,60 @@
+parameters:
+  - name: stage
+    type: string
+    default:
+  - name: environment
+    type: string
+    default: not-specified    
+  - name: ppspn_connection
+    type: string
+  - name: includeDevopsApp
+    type: string
+    default: false
+  - name: ToProperty
+    type: string
+    default: not-specified
+
+variables:
+- name: Stage
+  value: ${{ parameters.stage}}
+- name: ppspn_connection
+  value: ${{ parameters.ppspn_connection}} 
+- name: Branch
+  value: ${{ parameters.stage}}
+- ${{ if eq(parameters.stage, 'dev') }}:  
+  - name: BuildConfiguration
+    value: Debug
+- ${{ else }}:
+  - name: BuildConfiguration
+    value: Release
+- name: ExportConfigData
+  value: false
+- name: UploadePowerPageWebsite
+  value: false  
+- name: PowerPageWebsiteId
+  value: 
+- name: PowerPageWebsiteFolder
+  value:   
+- name: SolutionMappingFile
+  value:   
+- name: nugetConfigPath
+  value: $(Build.SourcesDirectory)\.envDevops\nuget.${{ parameters.stage }}.config
+- name: nugetPushSource
+  value:
+- name: ALMRestoreFeed
+  value: https://pkgs.dev.azure.com/TeamCSE/_packaging/NavyJAG-ALM/nuget/v3/index.json
+- name: Environment
+  value: ${{ parameters.environment}}
+- name: WithEnvDevops
+  value: ${{ parameters.includeDevopsApp}}
+- ${{ if eq(parameters.ToProperty, 'ToStage') }}:  
+    - name: ToProperty
+      value: To${{ parameters.stage}}
+- ${{ elseif eq(parameters.ToProperty, 'ToBranch') }}:  
+    - name: ToProperty
+      value: To$(Build.SourceBranchName)
+- ${{ else }}:
+    - name: ToProperty
+      value: ${{ parameters.ToProperty}}
+- name: BuildSolutionPath
+  value: '*.sln'

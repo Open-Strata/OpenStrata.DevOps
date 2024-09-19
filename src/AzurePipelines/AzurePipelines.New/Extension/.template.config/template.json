@@ -2,8 +2,7 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "OpenStrata",
   "classifications": [ "Common", "OpenStrata", "Extension", "Version Control" ],
-  "identity": "OpenStrata.DevOps.VSCode.Extension",
-  "name": "OpenStrata.DevOps.VSCode Extension",
-  "shortName": "os-vscode",
-  "sourceName": "OstrataTemplate.1"
+  "identity": "OpenStrata.DevOps.AzurePipelines.Extension",
+  "name": "OpenStrata.DevOps.AzurePipelines Extension",
+  "shortName": "os-azdo"
 }

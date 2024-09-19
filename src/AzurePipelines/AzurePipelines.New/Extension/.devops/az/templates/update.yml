@@ -1,0 +1,25 @@
+parameters:
+  - name: wh_payload
+    type: object
+    default:
+  - name: Environment
+    type: string
+  - name: PowerPlatformSPN
+    type: string
+    default: not-specified  
+  - name: Stage
+    type: string
+    default: not-specified  
+
+steps:
+- script: echo Running update.yml
+
+
+- template: build.yml
+  parameters:
+    Stage: ${{ parameters.Stage }}       
+
+- template: deploy.yml
+  parameters:
+    Environment:  ${{ parameters.Environment }}  
+    Stage: ${{ parameters.Stage }}   

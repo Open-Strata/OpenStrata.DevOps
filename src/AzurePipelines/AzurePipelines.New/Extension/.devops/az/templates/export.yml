@@ -1,0 +1,134 @@
+#export.yml
+parameters:
+  - name: wh_payload
+    type: object
+    default:
+  - name: Environment
+    type: string
+  - name: SolutionName
+    type: string
+  - name: CheckoutBranch
+    type: string
+  - name: CommitComments
+    type: string
+  - name: ExportStagingFolder
+    type: string
+    default: $(Agent.Workfolder)/exportStaging
+  - name: Stage
+    type: string
+    default: not-specified
+ 
+
+steps:
+- script: echo Running export.yml
+
+- task: MSBuild@1
+  inputs:
+    solution: $(BuildSolutionPath)
+    msbuildArchitecture: 'x64'
+    msbuildArguments:  -t:InitEnvDevopsExport
+    configuration: $(BuildConfiguration)
+  displayName: MSBuild  -t:InitEnvDevopsExport
+
+- script: |
+    echo "ExportConfigData =  $(ExportConfigData)"
+    echo "DownloadPowerPageWebsite =  $(DownloadPowerPageWebsite)"   
+    echo "PowerPageWebsiteId =  $(PowerPageWebsiteId)"  
+    echo "PowerPageWebsiteFolder =  $(PowerPageWebsiteFolder)"           
+
+- task: PowerPlatformToolInstaller@2
+  inputs:
+    DefaultVersion: true
+    AddToolsToPath: true
+
+
+- task: PowerPlatformPublishCustomizations@2
+  inputs:
+    authenticationType: 'PowerPlatformSPN'
+    PowerPlatformSPN: '$(ppspn_connection)'
+    Environment: '${{ parameters.Environment}}'
+    AsyncOperation: true
+    MaxAsyncWaitTime: '60'
+
+- task: PowerPlatformExportSolution@2
+  inputs:
+    authenticationType: 'PowerPlatformSPN'
+    PowerPlatformSPN: '$(ppspn_connection)'
+    Environment: '${{ parameters.Environment}}'
+    SolutionName: '${{ parameters.SolutionName}}'
+    SolutionOutputFile: '${{ parameters.ExportStagingFolder}}/${{ parameters.SolutionName}}_managed.zip'
+    Managed: true
+    AsyncOperation: true
+    MaxAsyncWaitTime: '60'
+
+- task: PowerPlatformExportSolution@2
+  inputs:
+    authenticationType: 'PowerPlatformSPN'
+    PowerPlatformSPN: '$(ppspn_connection)'
+    Environment: '${{ parameters.Environment}}'
+    SolutionName: '${{ parameters.SolutionName}}'
+    SolutionOutputFile: '${{ parameters.ExportStagingFolder}}/${{ parameters.SolutionName}}.zip'
+    Managed: false
+    AsyncOperation: true
+    MaxAsyncWaitTime: '60'
+
+
+
+- task: PowerPlatformUnpackSolution@2
+  inputs:
+    SolutionInputFile: '${{ parameters.ExportStagingFolder}}/${{ parameters.SolutionName}}.zip'
+    SolutionTargetFolder: '$(Build.SourcesDirectory)/Solution/Metadata'
+    SolutionType: 'Both'
+
+- task: PowerPlatformExportData@2
+  inputs:
+    authenticationType: 'PowerPlatformSPN'
+    PowerPlatformSPN: '$(ppspn_connection)'
+    Environment: '${{ parameters.Environment}}'
+    SchemaFile: 'configdata\schema.xml'
+    DataFile: 'configdata\data.zip'
+    Overwrite: true
+  condition: eq(variables['ExportConfigData'], 'true')
+  displayName: "Exporting Config Data"
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      $schemaFile = "configdata\schema.xml"
+      $dataFile = "configdata\data.zip"
+      $extractPath = "configdata\data"
+
+      if (Test-Path $extractPath) {
+          Remove-Item $extractPath -verbose -recurse
+      }
+      
+      Expand-Archive -Path $dataFile -DestinationPath $extractPath -Force
+    workingDirectory: '$(Build.SourcesDirectory)'  
+  condition: eq(variables['ExportConfigData'], 'true')
+  displayName: "Extracting Config Data"
+
+- task: PowerPlatformDownloadPaportal@2
+  inputs:
+    authenticationType: 'PowerPlatformSPN'
+    PowerPlatformSPN: '$(ppspn_connection)'
+    Environment: '${{ parameters.Environment}}'
+    DownloadPath: '$(Build.SourcesDirectory)\PowerPages'
+    WebsiteId: '$(PowerPageWebsiteId)'
+    Overwrite: true
+  condition: eq(variables['DownloadPowerPageWebsite'], 'true')
+  displayName: Download Power Page Portal
+
+- task: MSBuild@1
+  inputs:
+    solution: $(BuildSolutionPath)
+    msbuildArchitecture: 'x64'
+    configuration: $(BuildConfiguration)
+  displayName: MSBuild (Processing Export Results)
+
+- template: commit.yml
+  parameters:
+    wh_payload:  ${{ parameters.wh_payload }}
+    CheckoutBranch: ${{ parameters.CheckoutBranch }}
+    CommitComments: ${{ parameters.CommitComments }}

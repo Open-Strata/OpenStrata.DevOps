@@ -7,9 +7,9 @@
 
 		<ItemGroup Condition="'$(SkipOpenStrataMSBuildReference)' != 'true'">
 		
-			<PackageReferenceRequiredForInstall Remove="OpenStrata.MSBuild" />
+			<!-- <PackageReferenceRequiredForInstall Remove="OpenStrata.MSBuild" /> -->
 
-			<PackageReferenceRequiredForInstall Include="OpenStrata.MSBuild" Version="$(Version)" />
+			<!-- <PackageReferenceRequiredForInstall Include="OpenStrata.MSBuild" Version="$(Version)" /> -->
 
 		</ItemGroup>		
 		

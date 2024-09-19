@@ -1,0 +1,20 @@
+# Specify the triggers and parameters as appropriate for Prod deployment
+
+trigger: none.1
+- branches.1
+
+pr: none
+pool:
+  vmImage: 'windows-latest'
+
+name: $(Date:yyyyMMdd).$(Rev:r)_$(Build.SourceBranchName)
+
+extends:
+  template: branch-deploy.yml
+  parameters:
+     stage: stage.1
+     environment: environment.1
+     ppspn_connection: ppspn.1
+     includeDevopsApp: includeDevops.1
+     deployProfile: profile.1
+                           

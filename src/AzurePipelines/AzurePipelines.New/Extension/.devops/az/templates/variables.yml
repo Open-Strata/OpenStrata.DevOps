@@ -1,0 +1,38 @@
+parameters:
+  - name: wh_payload
+    type: object
+    default:  
+
+variables:
+- name: ppspn_connection
+  value: ${{ parameters.wh_payload.ppServiceConnectionName}} 
+- name: envdevops_repo
+  value: ${{ parameters.wh_payload.repo}}
+- name: envdevops_branch
+  value: ${{ parameters.wh_payload.branch}}
+- name: envdevops_action
+  value: ${{ parameters.wh_payload.action}} 
+- ${{ if eq(parameters.wh_payload.branch, 'dev') }}:  
+  - name: BuildConfiguration
+    value: Debug
+- ${{ else }}:
+  - name: BuildConfiguration
+    value: Release 
+- name: ExportConfigData
+  value: false
+- name: DownloadPowerPageWebsite
+  value: false  
+- name: PowerPageWebsiteId
+  value: 
+- name: PowerPageWebsiteFolder
+  value:   
+- name: SolutionMappingFile
+  value:   
+- name: nugetConfigPath
+  value: $(Build.SourcesDirectory)\.envDevops\nuget.${{ parameters.wh_payload.branch }}.config
+- name: nugetPushSource
+  value:
+- name: ALMRestoreFeed
+  value: https://pkgs.dev.azure.com/TeamCSE/_packaging/NavyJAG-ALM/nuget/v3/index.json
+- name: BuildSolutionPath
+  value: '*.sln'

@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "OpenStrata",
+  "classifications": [ "Common", "OpenStrata", "CICD", "Templates", "Version Control" ],
+  "identity": "OpenStrata.DevOps.AzurePipelines.CICD",
+  "name": "OpenStrata.DevOps.AzurePipelines CI=CD Templates",
+  "shortName": "os-azdo-cicd",
+  "sourceName": "OstrataTemplate.1"
+}

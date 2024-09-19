@@ -1,0 +1,108 @@
+
+parameters:
+  - name: stage
+    type: string
+    default: 
+  - name: environment
+    type: string
+    default: not-specified
+  - name: ppspn_connection
+    type: string
+    default: not-specified
+  - name: includeDevopsApp
+    type: boolean
+    default: false
+  - name: ToProperty
+    type: string
+    default: ToUAT
+    values:
+    - ToUAT
+    - ToQA
+    - ToProd
+    - ToBranch
+    - ToStage
+  - name: deployProfile
+    type: string
+    default: SingleSolutionApp
+    values:
+    - SingleSolutionApp
+    - Strati
+    - Installer
+
+variables:
+- template: branch-variables.yml
+  parameters:
+     stage: ${{ parameters.stage}}
+     environment: ${{ parameters.environment }}
+     ppspn_connection: ${{ parameters.ppspn_connection}}
+     includeDevopsApp: ${{ parameters.includeDevopsApp}}
+     ToProperty: ${{ parameters.ToProperty}}
+
+steps:
+
+- task: UseNode@1
+  inputs:
+    version: '16.x'
+  displayName: 'Install Node.js'
+
+- template: branch-nugetRestore.yml
+
+- task: MSBuild@1
+  inputs:
+    solution: $(BuildSolutionPath)
+    msbuildArchitecture: 'x64'
+    msbuildArguments: -p:$(ToProperty)=true -p:WithEnvDevops=$(WithEnvDevops) -t:InitEnvDevopsBranchDeploy
+    configuration: $(BuildConfiguration)
+  displayName: MSBuild InitEnvDevopsBranchDeploy
+
+- script: |
+    echo "DownloadPowerPageWebsite =  $(UploadPowerPageWebsite)"   
+    echo "PowerPageWebsiteId =  $(PowerPageWebsiteId)"  
+    echo "PowerPageWebsiteFolder =  $(PowerPageWebsiteFolder)"
+    echo "Environment =  $(Environment)" 
+
+- task: MSBuild@1
+  inputs:
+    solution: $(BuildSolutionPath)
+    msbuildArchitecture: 'x64'
+    configuration: $(BuildConfiguration)
+    msbuildArguments:  -p:$(ToProperty)=true -p:Stage=$(Stage)
+  displayName: MSBuild -p:$(ToProperty)=true -p:Stage=$(Stage)
+
+- ${{ if or(eq(parameters.deployProfile, 'SingleSolutionApp'),eq(parameters.deployProfile, 'Installer')) }}:
+    - task: PowerPlatformToolInstaller@2
+      inputs:
+        DefaultVersion: true
+        AddToolsToPath: true
+
+    - task: PowerPlatformDeployPackage@2
+      inputs:
+        authenticationType: 'PowerPlatformSPN'
+        PowerPlatformSPN: '$(ppspn_connection)'
+        Environment: '$(Environment)'
+        PackageFile: '$(Build.SourcesDirectory)\package\bin\$(BuildConfiguration)\package.zip'
+        logConsole: true
+
+    - task: PowerPlatformUploadPaportal@2
+      inputs:
+        authenticationType: 'PowerPlatformSPN'
+        PowerPlatformSPN: '$(ppspn_connection)'
+        Environment: '$(Environment)'
+        UploadPath: '$(Build.SourcesDirectory)\PowerPages\$(PowerPageWebsiteFolder)' 
+      condition: eq(variables['UploadPowerPageWebsite'], 'true')
+
+- ${{ if eq(parameters.deployProfile, 'Strati') }}:
+    - pwsh: |
+         echo "running nugetRestore.yml"    
+         $defaultPushSourceNode = Select-Xml -Path $(nugetConfigPath) -XPath '/configuration/config/add[@key="defaultPushSource"]' | Select-Object -ExpandProperty Node
+         $pushsource = $defaultPushSourceNode.value
+         echo "##vso[task.setvariable variable=nugetPushSource]$pushsource"
+      #condition: eq(variables['nugetPushSource'], '')
+      displayName: 'Get Default Push Source'
+    - task: MSBuild@1
+      inputs:
+        solution: $(BuildSolutionPath)
+        msbuildArchitecture: 'x64'
+        configuration: $(BuildConfiguration)
+        msbuildArguments: -t:Push -p:$(ToProperty)=true -p:Stage=$(Stage) -p:PushSource=$(nugetPushSource)
+      displayName:  MSBuild Push to $(nugetPushSource)  

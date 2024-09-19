@@ -13,9 +13,7 @@ function global:get-solution-name
     }
 
     $SolutionManifest = Select-Xml -Path $solXmlFile -XPath '/ImportExportXml/SolutionManifest' | Select-Object -ExpandProperty Node
-
     return $SolutionManifest.UniqueName
-
 }
 
 function global:Show-Shortcut-Note ([string] $note) {
@@ -149,11 +147,18 @@ function global:shortcuts {
 
 }
 
+function global:os-git-update{}
+function global:os-pac-update{}
 function global:os-update {
     param
     (
-        [string] $version
+        [string] $version,
+        [bool] $initialRun = $true
     )
+
+    if ($initialRun){
+
+    }
 
     $solutionName = global:get-solution-name
 
@@ -178,6 +183,21 @@ function global:os-update {
     }
     Show-Shortcut-Note "dotnet new os-vscode -n $solutionName --force"
     dotnet new os-vscode -n $solutionName --force
+
+   #  Show-Shortcut-Note "global:os-git-update $solutionName" 
+   # global:os-git-update $solutionName
+    
+   # Show-Shortcut-Note "global:os-pac-update  $solutionName" 
+   # global:os-pac-update $solutionName
+
+
+   # Adding new one-time files if they don't exist
+    if(-Not [System.IO.File]::Exists("openstrata.props"))
+    {
+        Show-Shortcut-Note "dotnet new os-osprops"        
+        dotnet new os-props
+    }
+
 
     Show-Shortcut-Note "dotnet restore"
     dotnet restore
@@ -211,22 +231,32 @@ function global:getvsendcodedcommand {
 
 }
 
+function global:ensure-globals
+{
+   $global:SolutionName = global:get-solution-name
+
+
+}
+
 if ([System.IO.File]::Exists("$PSScriptRoot\git-shortcuts.ps1"))
 {
-  .$PSScriptRoot\git-shortcuts.ps1
+    .$PSScriptRoot\git-shortcuts.ps1
 }
 
 if ([System.IO.File]::Exists("$PSScriptRoot\pac-shortcuts.ps1"))
 {
-  .$PSScriptRoot\pac-shortcuts.ps1
+    .$PSScriptRoot\pac-shortcuts.ps1
 }
 
 if ([System.IO.File]::Exists("shortcuts-local.ps1"))
 {
-  . .\shortcuts-local.ps1
+   . .\shortcuts-local.ps1
 }
 
 if ([System.IO.File]::Exists("..\shortcuts-global.ps1"))
 {
-  . ..\shortcuts-global.ps1
+    . .\shortcuts-global.ps1
 }
+
+
+global:ensure-globals

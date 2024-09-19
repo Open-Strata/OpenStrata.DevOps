@@ -1,0 +1,21 @@
+# Specify the triggers and parameters as appropriate for UAT deployment
+
+trigger:
+- uat
+- main
+- uat
+
+pr: none
+pool:
+  vmImage: 'windows-latest'
+
+name: $(Date:yyyyMMdd).$(Rev:r)_$(Build.SourceBranchName)
+
+extends:
+  template: branch-deploy.yml
+  parameters:
+     stage: $(Build.SourceBranchName)
+     ToProperty: ToBranch
+     deployProfile: Strati
+      
+                           

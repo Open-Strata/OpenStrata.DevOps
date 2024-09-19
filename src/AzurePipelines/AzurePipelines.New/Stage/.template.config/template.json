@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "OpenStrata",
+  "classifications": [ "Common", "OpenStrata", "Stage", "Templates", "Version Control" ],
+  "identity": "OpenStrata.DevOps.AzurePipelines.Stage",
+  "name": "OpenStrata.DevOps.AzurePipelines Stage Templates",
+  "shortName": "os-azdo-stage",
+  "sourceName": "OstrataTemplate.1"
+}

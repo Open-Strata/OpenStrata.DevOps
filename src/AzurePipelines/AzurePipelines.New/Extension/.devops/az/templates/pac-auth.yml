@@ -1,0 +1,30 @@
+# pac-auth.yml
+
+# Installs PowerPlatform Tools (including PAC CLI)
+- task: PowerPlatformToolInstaller@2
+  displayName: 'Install Power Platform Build Tools'
+
+
+# Set PACEXEPATH variable : the path to the PAC CLI executable 
+- pwsh: |
+    $pacExePath = $env:POWERPLATFORMTOOLS_PACCLIPATH + "\pac\tools\pac.exe"  
+    echo "##vso[task.setvariable variable=PACEXEPATH]$pacExePath"
+  displayName: 'Set Pac.Exe path' 
+  
+# Sets the Connection variables from the Service Connection passed in input parameter
+# Will set BuildTools.ApplicationId, BuildTools.ClientSecret, BuildTools.TenantId
+- task: PowerPlatformSetConnectionVariables@2
+  displayName: 'Set Connection Variables - ${{parameters.serviceConnectionName}}'
+  name: ConnectionVariables
+  inputs:
+    authenticationType: PowerPlatformSPN
+    PowerPlatformSPN: '${{parameters.serviceConnectionName}}'
+
+# PAC Auth - Connects to the Power Platform environment
+- pwsh: |
+    $pacCommand = "auth create --url ${{parameters.serviceConnectionUrl}} --applicationId $(ConnectionVariables.BuildTools.ApplicationId) --clientSecret $(ConnectionVariables.BuildTools.ClientSecret) --tenant $(ConnectionVariables.BuildTools.TenantId)"
+    Write-Host "Pac command - $(PACEXEPATH) $pacCommand"
+    
+    Invoke-Expression -Command "$(PACEXEPATH) $pacCommand"    
+    
+  displayName: 'PAC Auth'

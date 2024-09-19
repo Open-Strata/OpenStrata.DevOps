@@ -1,0 +1,9 @@
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<Import Project="..\gitignore\OpenStrata.DevOps.AzurePipelines.gitignore.props" Condition="Exists('..\gitignore\OpenStrata.DevOps.AzurePipelines.gitignore.props')"     />
+
+	<ItemGroup>
+		<PackageReference Include="OpenStrata.DevOps.AzurePipelines" Version="1.*" Condition="'$(IsAzPipelineBuild)'=='true'" />
+	</ItemGroup>
+	
+</Project>

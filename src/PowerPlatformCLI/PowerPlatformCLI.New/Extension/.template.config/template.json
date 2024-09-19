@@ -4,5 +4,5 @@
   "classifications": [ "Common", "OpenStrata", "Extension", "Version Control" ],
   "identity": "OpenStrata.DevOps.PowerPlatformCLI.AddExtension",
   "name": "OpenStrata.DevOps.PowerPlatformCLI Extension",
-  "shortName": "os-ext-ppcli"
+  "shortName": "os-ppcli"
 }

@@ -1,0 +1,1563 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://openstrata.org/schemas/v-01/devops-config",
+    "description": "A schema used by the various Open-Strata Power Platform devops extensions.",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "minLength": 1
+        },
+        "devops": {
+            "type": "object",
+            "properties": {
+                "stages": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                        "required": [
+                            "stageName"
+                        ],
+                        "properties": {
+                            "stageName": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "envSettings": {
+                                "type": "object",
+                                "properties": {
+                                    "authName": {
+                                        "type": "string",
+                                        "minLength": 5,
+                                        "maxLength": 30,
+                                        "description": "The name of an authentication profile you want used by the Power Platform Command Line to connect to the environment (maximum 30 characters)"
+                                    },
+                                    "environment": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "required": [
+                                            "authMethod"
+                                        ]
+                                    },
+                                    "authMethod": {
+                                        "type": "string",
+                                        "enum": [
+                                            "userName",
+                                            "applicationId",
+                                            "deviceCode",
+                                            "managedIdentity",
+                                            "githubFederated",
+                                            "azureDevOpsFederated"
+                                        ],
+                                        "required": [
+                                            "environment"
+                                        ]
+                                    },
+                                    "tenant": {
+                                        "type": "string",
+                                        "minLength": 1
+                                    },
+                                    "cloud": {
+                                        "type": "string",
+                                        "minLength": 1
+                                    },
+                                    "applicationId": {
+                                        "type": "string",
+                                        "minLength": 1
+                                    },
+                                    "userName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "authName"
+                                ],
+                                "anyOf": [
+                                    {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "userName"
+                                            }
+                                        },
+                                        "required": [
+                                            "userName"
+                                        ]
+                                    },
+                                    {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "applicationId"
+                                            }
+                                        },
+                                        "required": [
+                                            "tenant",
+                                            "applicationId"
+                                        ]
+                                    },
+                                    {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "deviceCode"
+                                            }
+                                        },
+                                        "required": [
+                                            "userName"
+                                        ]
+                                    },
+                                    {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "managedIdentity"
+                                            }
+                                        },
+                                        "required": [
+                                            "tenant",
+                                            "applicationID"
+                                        ]
+                                    },
+                                    {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "githubFederated"
+                                            }
+                                        },
+                                        "required": [
+                                            "tenant",
+                                            "applicationId"
+                                        ]
+                                    },
+                                    {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "azureDevOpsFederated"
+                                            }
+                                        },
+                                        "required": [
+                                            "tenant",
+                                            "applicationId"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "stages"
+            ]
+        },
+        "settings": {
+            "type": "object",
+            "properties": {
+                "aciwebendpointurl": {
+                    "type": "string"
+                },
+                "activitytypefilter": {
+                    "type": "boolean"
+                },
+                "activitytypefilterv2": {
+                    "type": "string"
+                },
+                "advancedcolumneditorenabled": {
+                    "type": "string"
+                },
+                "advancedcolumnfilteringenabled": {
+                    "type": "string"
+                },
+                "advancedfilteringenabled": {
+                    "type": "string"
+                },
+                "advancedlookupenabled": {
+                    "type": "string"
+                },
+                "advancedlookupineditfilter": {
+                    "type": "integer"
+                },
+                "aipromptsenabled": {
+                    "type": "string"
+                },
+                "allowaddressbooksyncs": {
+                    "type": "string"
+                },
+                "allowapplicationuseraccess": {
+                    "type": "string"
+                },
+                "allowautoresponsecreation": {
+                    "type": "string"
+                },
+                "allowautounsubscribe": {
+                    "type": "boolean"
+                },
+                "allowautounsubscribeacknowledgement": {
+                    "type": "boolean"
+                },
+                "allowclientmessagebarad": {
+                    "type": "string"
+                },
+                "allowconnectorsonpowerfxactions": {
+                    "type": "string"
+                },
+                "allowedapplicationsfordvaccess": {
+                    "type": "string"
+                },
+                "allowediprangeforfirewall": {
+                    "type": "string"
+                },
+                "allowediprangeforstorageaccesssignatures": {
+                    "type": "string"
+                },
+                "allowedmimetypes": {
+                    "type": "string"
+                },
+                "allowedservicetagsforfirewall": {
+                    "type": "string"
+                },
+                "allowentityonlyaudit": {
+                    "type": "string"
+                },
+                "allowleadingwildcardsingridsearch": {
+                    "type": "boolean"
+                },
+                "allowleadingwildcardsinquickfind": {
+                    "type": "integer"
+                },
+                "allowlegacyclientexperience": {
+                    "type": "boolean"
+                },
+                "allowlegacydialogsembedding": {
+                    "type": "string"
+                },
+                "allowmarketingemailexecution": {
+                    "type": "string"
+                },
+                "allowmicrosofttrustedservicetags": {
+                    "type": "string"
+                },
+                "allowofflinescheduledsyncs": {
+                    "type": "string"
+                },
+                "allowoutlookscheduledsyncs": {
+                    "type": "string"
+                },
+                "allowredirectadminsettingstomodernui": {
+                    "type": "boolean"
+                },
+                "allowunresolvedpartiesonemailsend": {
+                    "type": "boolean"
+                },
+                "allowuserformmodepreference": {
+                    "type": "string"
+                },
+                "allowusershidingsystemviews": {
+                    "type": "boolean"
+                },
+                "allowusersseeappdownloadmessage": {
+                    "type": "string"
+                },
+                "allowwebexcelexport": {
+                    "type": "string"
+                },
+                "amdesignator": {
+                    "type": "string"
+                },
+                "appdesignerexperienceenabled": {
+                    "type": "boolean"
+                },
+                "applicationbasedaccesscontrolmode": {
+                    "type": "string"
+                },
+                "appointmentricheditorexperience": {
+                    "type": "boolean"
+                },
+                "appointmentwithteamsmeeting": {
+                    "type": "boolean"
+                },
+                "appointmentwithteamsmeetingv2": {
+                    "type": "string"
+                },
+                "auditretentionperiod": {
+                    "type": "integer"
+                },
+                "auditretentionperiodv2": {
+                    "type": "string"
+                },
+                "auditsettings": {
+                    "type": "string"
+                },
+                "autoapplydefaultoncasecreate": {
+                    "type": "string"
+                },
+                "autoapplydefaultoncaseupdate": {
+                    "type": "string"
+                },
+                "autoapplysla": {
+                    "type": "boolean"
+                },
+                "azureschedulerjobcollectionname": {
+                    "type": "string"
+                },
+                "basecurrencyprecision": {
+                    "type": "integer"
+                },
+                "basecurrencysymbol": {
+                    "type": "string"
+                },
+                "bingmapsapikey": {
+                    "type": "string"
+                },
+                "blockedapplicationsfordvaccess": {
+                    "type": "string"
+                },
+                "blockedattachments": {
+                    "type": "string"
+                },
+                "blockedmimetypes": {
+                    "type": "string"
+                },
+                "bounddashboarddefaultcardexpanded": {
+                    "type": "boolean"
+                },
+                "bulkoperationprefix": {
+                    "type": "string"
+                },
+                "businessclosurecalendarid": {
+                    "type": "string"
+                },
+                "calendartype": {
+                    "type": "integer"
+                },
+                "campaignprefix": {
+                    "type": "string"
+                },
+                "canoptoutnewsearchexperience": {
+                    "type": "string"
+                },
+                "cascadestatusupdate": {
+                    "type": "boolean"
+                },
+                "caseprefix": {
+                    "type": "string"
+                },
+                "categoryprefix": {
+                    "type": "string"
+                },
+                "clientfeatureset": {
+                    "type": "string"
+                },
+                "contentsecuritypolicyconfiguration": {
+                    "type": "string"
+                },
+                "contentsecuritypolicyconfigurationforcanvas": {
+                    "type": "string"
+                },
+                "contentsecuritypolicyoptions": {
+                    "type": "integer"
+                },
+                "contentsecuritypolicyreporturi": {
+                    "type": "string"
+                },
+                "contractprefix": {
+                    "type": "string"
+                },
+                "copresencerefreshrate": {
+                    "type": "integer"
+                },
+                "cortanaproactiveexperienceenabled": {
+                    "type": "boolean"
+                },
+                "createdon": {
+                    "type": "string"
+                },
+                "createproductswithoutparentinactivestate": {
+                    "type": "boolean"
+                },
+                "currencydecimalprecision": {
+                    "type": "integer"
+                },
+                "currencydisplayoption": {
+                    "type": "string"
+                },
+                "currencyformatcode": {
+                    "type": "integer"
+                },
+                "currencysymbol": {
+                    "type": "string"
+                },
+                "currentbulkoperationnumber": {
+                    "type": "integer"
+                },
+                "currentcampaignnumber": {
+                    "type": "integer"
+                },
+                "currentcasenumber": {
+                    "type": "integer"
+                },
+                "currentcategorynumber": {
+                    "type": "integer"
+                },
+                "currentcontractnumber": {
+                    "type": "integer"
+                },
+                "currentimportsequencenumber": {
+                    "type": "integer"
+                },
+                "currentinvoicenumber": {
+                    "type": "integer"
+                },
+                "currentkanumber": {
+                    "type": "integer"
+                },
+                "currentkbnumber": {
+                    "type": "integer"
+                },
+                "currentordernumber": {
+                    "type": "integer"
+                },
+                "currentparsedtablenumber": {
+                    "type": "integer"
+                },
+                "currentquotenumber": {
+                    "type": "integer"
+                },
+                "dateformatcode": {
+                    "type": "string"
+                },
+                "dateformatstring": {
+                    "type": "string"
+                },
+                "dateseparator": {
+                    "type": "string"
+                },
+                "daysbeforeemaildescriptionismigrated": {
+                    "type": "string"
+                },
+                "daysbeforeinactiveteamschatsyncdisabled": {
+                    "type": "integer"
+                },
+                "dayssincerecordlastmodifiedmaxvalue": {
+                    "type": "integer"
+                },
+                "decimalsymbol": {
+                    "type": "string"
+                },
+                "defaultcountrycode": {
+                    "type": "string"
+                },
+                "defaultcrmcustomname": {
+                    "type": "string"
+                },
+                "defaultrecurrenceendrangetype": {
+                    "type": "string"
+                },
+                "delegatedadminuserid": {
+                    "type": "string"
+                },
+                "desktopflowqueuelogsttlinminutes": {
+                    "type": "integer"
+                },
+                "desktopflowrunactionlogsstatus": {
+                    "type": "string"
+                },
+                "desktopflowrunactionlogversion": {
+                    "type": "string"
+                },
+                "disabledreason": {
+                    "type": "string"
+                },
+                "disablesocialcare": {
+                    "type": "boolean"
+                },
+                "disablesystemlabelscachesharing": {
+                    "type": "boolean"
+                },
+                "discountcalculationmethod": {
+                    "type": "string"
+                },
+                "displaynavigationtour": {
+                    "type": "string"
+                },
+                "emailconnectionchannel": {
+                    "type": "string"
+                },
+                "emailcorrelationenabled": {
+                    "type": "string"
+                },
+                "emailsendpollingperiod": {
+                    "type": "integer"
+                },
+                "enableasyncmergeapiforuci": {
+                    "type": "string"
+                },
+                "enablebingmapsintegration": {
+                    "type": "boolean"
+                },
+                "enablecanvasappsinsolutionsbydefault": {
+                    "type": "boolean"
+                },
+                "enableflowsinsolutionbydefault": {
+                    "type": "boolean"
+                },
+                "enableflowsinsolutionbydefaultgraceperiod": {
+                    "type": "boolean"
+                },
+                "enableimmersiveskypeintegration": {
+                    "type": "boolean"
+                },
+                "enableipbasedcookiebinding": {
+                    "type": "boolean"
+                },
+                "enableipbasedfirewallrule": {
+                    "type": "boolean"
+                },
+                "enableipbasedfirewallruleinauditmode": {
+                    "type": "string"
+                },
+                "enableipbasedstorageaccesssignaturerule": {
+                    "type": "string"
+                },
+                "enablelivepersonacarduci": {
+                    "type": "string"
+                },
+                "enablelivepersoncardintegrationinoffice": {
+                    "type": "boolean"
+                },
+                "enablelpauthoring": {
+                    "type": "boolean"
+                },
+                "enablemakerswitchtoclassic": {
+                    "type": "string"
+                },
+                "enablemicrosoftflowintegration": {
+                    "type": "string"
+                },
+                "enablepricingoncreate": {
+                    "type": "string"
+                },
+                "enablesmartmatching": {
+                    "type": "string"
+                },
+                "enableunifiedclientcdn": {
+                    "type": "boolean"
+                },
+                "enableunifiedinterfaceshellrefresh": {
+                    "type": "string"
+                },
+                "enforcereadonlyplugins": {
+                    "type": "boolean"
+                },
+                "entityimage": {
+                    "type": "string"
+                },
+                "entityimageid": {
+                    "type": "string"
+                },
+                "entityimage_timestamp": {
+                    "type": "string"
+                },
+                "entityimage_url": {
+                    "type": "string"
+                },
+                "expirechangetrackingindays": {
+                    "type": "integer"
+                },
+                "expiresubscriptionsindays": {
+                    "type": "integer"
+                },
+                "externalbaseurl": {
+                    "type": "string"
+                },
+                "externalpartycorrelationkeys": {
+                    "type": "string"
+                },
+                "externalpartyentitysettings": {
+                    "type": "string"
+                },
+                "featureset": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "minItems": 1,
+                    "items": {
+                        "required": [
+                            "name",
+                            "value"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "value": {
+                                "type": "string",
+                                "minLength": 1
+                            }
+                        }
+                    }
+                },
+                "fiscalcalendarstart": {
+                    "type": "string"
+                },
+                "fiscalperiodformat": {
+                    "type": "string"
+                },
+                "fiscalperiodformatperiod": {
+                    "type": "string"
+                },
+                "fiscalperiodtype": {
+                    "type": "integer"
+                },
+                "fiscalyeardisplaycode": {
+                    "type": "integer"
+                },
+                "fiscalyearformat": {
+                    "type": "string"
+                },
+                "fiscalyearformatprefix": {
+                    "type": "string"
+                },
+                "fiscalyearformatsuffix": {
+                    "type": "string"
+                },
+                "fiscalyearformatyear": {
+                    "type": "string"
+                },
+                "fiscalyearperiodconnect": {
+                    "type": "string"
+                },
+                "flowlogsttlinminutes": {
+                    "type": "integer"
+                },
+                "flowruntimetoliveinseconds": {
+                    "type": "integer"
+                },
+                "fullnameconventioncode": {
+                    "type": "string"
+                },
+                "futureexpansionwindow": {
+                    "type": "integer"
+                },
+                "generatealertsforerrors": {
+                    "type": "string"
+                },
+                "generatealertsforinformation": {
+                    "type": "string"
+                },
+                "generatealertsforwarnings": {
+                    "type": "string"
+                },
+                "getstartedpanecontentenabled": {
+                    "type": "string"
+                },
+                "globalappendurlparametersenabled": {
+                    "type": "boolean"
+                },
+                "globalhelpurl": {
+                    "type": "string"
+                },
+                "globalhelpurlenabled": {
+                    "type": "boolean"
+                },
+                "goalrollupexpirytime": {
+                    "type": "integer"
+                },
+                "goalrollupfrequency": {
+                    "type": "integer"
+                },
+                "grantaccesstonetworkservice": {
+                    "type": "boolean"
+                },
+                "hashdeltasubjectcount": {
+                    "type": "string"
+                },
+                "hashfilterkeywords": {
+                    "type": "string"
+                },
+                "hashmaxcount": {
+                    "type": "string"
+                },
+                "hashminaddresscount": {
+                    "type": "string"
+                },
+                "ignoreinternalemail": {
+                    "type": "boolean"
+                },
+                "improvesearchloggingenabled": {
+                    "type": "string"
+                },
+                "inactivitytimeoutenabled": {
+                    "type": "boolean"
+                },
+                "inactivitytimeoutinmins": {
+                    "type": "string"
+                },
+                "inactivitytimeoutreminderinmins": {
+                    "type": "string"
+                },
+                "incomingemailexchangeemailretrievalbatchsize": {
+                    "type": "integer"
+                },
+                "initialversion": {
+                    "type": "string"
+                },
+                "integrationuserid": {
+                    "type": "string"
+                },
+                "invoiceprefix": {
+                    "type": "string"
+                },
+                "ipbasedstorageaccesssignaturemode": {
+                    "type": "string"
+                },
+                "isactioncardenabled": {
+                    "type": "boolean"
+                },
+                "isactionsupportfeatureenabled": {
+                    "type": "boolean"
+                },
+                "isactivityanalysisenabled": {
+                    "type": "boolean"
+                },
+                "isallmoneydecimal": {
+                    "type": "string"
+                },
+                "isappmode": {
+                    "type": "boolean"
+                },
+                "isappointmentattachmentsyncenabled": {
+                    "type": "boolean"
+                },
+                "isassignedtaskssyncenabled": {
+                    "type": "boolean"
+                },
+                "isauditenabled": {
+                    "type": "boolean"
+                },
+                "isautodatacaptureenabled": {
+                    "type": "boolean"
+                },
+                "isautodatacapturev2enabled": {
+                    "type": "boolean"
+                },
+                "isautoinstallappford365inteamsenabled": {
+                    "type": "string"
+                },
+                "isautosaveenabled": {
+                    "type": "string"
+                },
+                "isbasecardstaticfielddataenabled": {
+                    "type": "string"
+                },
+                "isbasicgeospatialintegrationenabled": {
+                    "type": "string"
+                },
+                "isbpfentitycustomizationfeatureenabled": {
+                    "type": "string"
+                },
+                "iscollaborationexperienceenabled": {
+                    "type": "string"
+                },
+                "isconflictdetectionenabledformobileclient": {
+                    "type": "boolean"
+                },
+                "iscontactmailingaddresssyncenabled": {
+                    "type": "string"
+                },
+                "iscontentsecuritypolicyenabled": {
+                    "type": "boolean"
+                },
+                "iscontentsecuritypolicyenabledforcanvas": {
+                    "type": "string"
+                },
+                "iscontextualemailenabled": {
+                    "type": "boolean"
+                },
+                "iscontextualhelpenabled": {
+                    "type": "boolean"
+                },
+                "iscopilotfeedbackenabled": {
+                    "type": "string"
+                },
+                "iscustomcontrolsincanvasappsenabled": {
+                    "type": "boolean"
+                },
+                "isdefaultcountrycodecheckenabled": {
+                    "type": "string"
+                },
+                "isdelegateaccessenabled": {
+                    "type": "boolean"
+                },
+                "isdelveactionhubintegrationenabled": {
+                    "type": "boolean"
+                },
+                "isdesktopflowconnectionembeddingenabled": {
+                    "type": "string"
+                },
+                "isdesktopflowruntimerepairattendedenabled": {
+                    "type": "string"
+                },
+                "isdesktopflowruntimerepairunattendedenabled": {
+                    "type": "string"
+                },
+                "isdesktopflowschemav2enabled": {
+                    "type": "string"
+                },
+                "isdesktopflowvanillaimagesharingenabled": {
+                    "type": "string"
+                },
+                "isdisabled": {
+                    "type": "boolean"
+                },
+                "isduplicatedetectionenabled": {
+                    "type": "string"
+                },
+                "isduplicatedetectionenabledforimport": {
+                    "type": "string"
+                },
+                "isduplicatedetectionenabledforofflinesync": {
+                    "type": "string"
+                },
+                "isduplicatedetectionenabledforonlinecreateupdate": {
+                    "type": "string"
+                },
+                "isemailaddressvalidationenabled": {
+                    "type": "boolean"
+                },
+                "isemailmonitoringallowed": {
+                    "type": "boolean"
+                },
+                "isemailserverprofilecontentfilteringenabled": {
+                    "type": "string"
+                },
+                "isenabledforallroles": {
+                    "type": "boolean"
+                },
+                "isexternalfilestorageenabled": {
+                    "type": "boolean"
+                },
+                "isexternalsearchindexenabled": {
+                    "type": "boolean"
+                },
+                "isfiscalperiodmonthbased": {
+                    "type": "boolean"
+                },
+                "isfolderautocreatedonsp": {
+                    "type": "string"
+                },
+                "isfolderbasedtrackingenabled": {
+                    "type": "boolean"
+                },
+                "isfulltextsearchenabled": {
+                    "type": "boolean"
+                },
+                "isgeospatialazuremapsintegrationenabled": {
+                    "type": "string"
+                },
+                "ishierarchicalsecuritymodelenabled": {
+                    "type": "boolean"
+                },
+                "isideasdatacollectionenabled": {
+                    "type": "string"
+                },
+                "isluisenabledford365bot": {
+                    "type": "boolean"
+                },
+                "ismailboxforcedunlockingenabled": {
+                    "type": "string"
+                },
+                "ismailboxinactivebackoffenabled": {
+                    "type": "boolean"
+                },
+                "ismanualsalesforecastingenabled": {
+                    "type": "boolean"
+                },
+                "ismobileclientondemandsyncenabled": {
+                    "type": "boolean"
+                },
+                "ismobileofflineenabled": {
+                    "type": "boolean"
+                },
+                "ismodeldrivenappsinmsteamsenabled": {
+                    "type": "string"
+                },
+                "ismsteamscollaborationenabled": {
+                    "type": "boolean"
+                },
+                "ismsteamsenabled": {
+                    "type": "boolean"
+                },
+                "ismsteamssettingchangedbyuser": {
+                    "type": "boolean"
+                },
+                "ismsteamsusersyncenabled": {
+                    "type": "boolean"
+                },
+                "isnewaddproductexperienceenabled": {
+                    "type": "boolean"
+                },
+                "isnotesanalysisenabled": {
+                    "type": "string"
+                },
+                "isnotificationford365inteamsenabled": {
+                    "type": "string"
+                },
+                "isofficegraphenabled": {
+                    "type": "boolean"
+                },
+                "isonedriveenabled": {
+                    "type": "boolean"
+                },
+                "ispaienabled": {
+                    "type": "string"
+                },
+                "ispdfgenerationenabled": {
+                    "type": "string"
+                },
+                "isperprocesscapacityoverageenabled": {
+                    "type": "string"
+                },
+                "isplaybookenabled": {
+                    "type": "string"
+                },
+                "ispresenceenabled": {
+                    "type": "string"
+                },
+                "ispreviewenabledforactioncard": {
+                    "type": "string"
+                },
+                "ispreviewforautocaptureenabled": {
+                    "type": "boolean"
+                },
+                "ispreviewforemailmonitoringallowed": {
+                    "type": "boolean"
+                },
+                "ispricelistmandatory": {
+                    "type": "string"
+                },
+                "isprocesscapacityautoclaimenabled": {
+                    "type": "string"
+                },
+                "isquickcreateenabledforopportunityclose": {
+                    "type": "boolean"
+                },
+                "isreadauditenabled": {
+                    "type": "boolean"
+                },
+                "isrelationshipinsightsenabled": {
+                    "type": "boolean"
+                },
+                "isresourcebookingexchangesyncenabled": {
+                    "type": "boolean"
+                },
+                "isrichtextnotesenabled": {
+                    "type": "string"
+                },
+                "isrpaautoscaleaadjoinenabled": {
+                    "type": "string"
+                },
+                "isrpaautoscaleenabled": {
+                    "type": "string"
+                },
+                "isrpaboxcrossgeoenabled": {
+                    "type": "boolean"
+                },
+                "isrpaboxenabled": {
+                    "type": "string"
+                },
+                "isrpaunattendedenabled": {
+                    "type": "string"
+                },
+                "issalesassistantenabled": {
+                    "type": "boolean"
+                },
+                "issharinginorgallowed": {
+                    "type": "string"
+                },
+                "issopintegrationenabled": {
+                    "type": "boolean"
+                },
+                "istextwrapenabled": {
+                    "type": "string"
+                },
+                "isuseraccessauditenabled": {
+                    "type": "boolean"
+                },
+                "iswriteinproductsallowed": {
+                    "type": "string"
+                },
+                "kaprefix": {
+                    "type": "string"
+                },
+                "kbprefix": {
+                    "type": "string"
+                },
+                "languagecode": {
+                    "type": "integer"
+                },
+                "legacyapptoggle": {
+                    "type": "string"
+                },
+                "localeid": {
+                    "type": "integer"
+                },
+                "longdateformatcode": {
+                    "type": "integer"
+                },
+                "lookupcharactercountbeforeresolve": {
+                    "type": "string"
+                },
+                "lookupresolvedelayms": {
+                    "type": "string"
+                },
+                "mailboxintermittentissueminrange": {
+                    "type": "integer"
+                },
+                "mailboxpermanentissueminrange": {
+                    "type": "integer"
+                },
+                "maxactionstepsinbpf": {
+                    "type": "integer"
+                },
+                "maxallowedpendingrollupjobcount": {
+                    "type": "string"
+                },
+                "maxallowedpendingrollupjobpercentage": {
+                    "type": "string"
+                },
+                "maxappointmentdurationdays": {
+                    "type": "integer"
+                },
+                "maxconditionsformobileofflinefilters": {
+                    "type": "integer"
+                },
+                "maxdepthforhierarchicalsecuritymodel": {
+                    "type": "integer"
+                },
+                "maxfolderbasedtrackingmappings": {
+                    "type": "integer"
+                },
+                "maximumactivebusinessprocessflowsallowedperentity": {
+                    "type": "integer"
+                },
+                "maximumdynamicpropertiesallowed": {
+                    "type": "integer"
+                },
+                "maximumentitieswithactivesla": {
+                    "type": "integer"
+                },
+                "maximumslakpiperentitywithactivesla": {
+                    "type": "integer"
+                },
+                "maximumtrackingnumber": {
+                    "type": "integer"
+                },
+                "maxproductsinbundle": {
+                    "type": "integer"
+                },
+                "maxrecordsforexporttoexcel": {
+                    "type": "integer"
+                },
+                "maxrecordsforlookupfilters": {
+                    "type": "integer"
+                },
+                "maxrollupfieldsperentity": {
+                    "type": "string"
+                },
+                "maxrollupfieldsperorg": {
+                    "type": "string"
+                },
+                "maxslaitemspersla": {
+                    "type": "string"
+                },
+                "maxsupportedinternetexplorerversion": {
+                    "type": "integer"
+                },
+                "maxuploadfilesize": {
+                    "type": "integer"
+                },
+                "maxverboseloggingmailbox": {
+                    "type": "integer"
+                },
+                "maxverboseloggingsynccycles": {
+                    "type": "integer"
+                },
+                "microsoftflowenvironment": {
+                    "type": "string"
+                },
+                "minaddressbooksyncinterval": {
+                    "type": "integer"
+                },
+                "minofflinesyncinterval": {
+                    "type": "integer"
+                },
+                "minoutlooksyncinterval": {
+                    "type": "integer"
+                },
+                "mobileofflineminlicenseprod": {
+                    "type": "integer"
+                },
+                "mobileofflineminlicensetrial": {
+                    "type": "integer"
+                },
+                "mobileofflinesyncinterval": {
+                    "type": "integer"
+                },
+                "modernadvancedfindfiltering": {
+                    "type": "boolean"
+                },
+                "modernappdesignercoauthoringenabled": {
+                    "type": "string"
+                },
+                "modifiedon": {
+                    "type": "string"
+                },
+                "multicolumnsortenabled": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "naturallanguageassistfilter": {
+                    "type": "boolean"
+                },
+                "negativecurrencyformatcode": {
+                    "type": "integer"
+                },
+                "negativeformatcode": {
+                    "type": "string"
+                },
+                "newsearchexperienceenabled": {
+                    "type": "string"
+                },
+                "nexttrackingnumber": {
+                    "type": "integer"
+                },
+                "notifymailboxownerofemailserverlevelalerts": {
+                    "type": "boolean"
+                },
+                "numberformat": {
+                    "type": "string"
+                },
+                "numbergroupformat": {
+                    "type": "integer"
+                },
+                "numberseparator": {
+                    "type": "string"
+                },
+                "officeappsautodeploymentenabled": {
+                    "type": "boolean"
+                },
+                "officegraphdelveurl": {
+                    "type": "string"
+                },
+                "oobpricecalculationenabled": {
+                    "type": "string"
+                },
+                "optoutschemav2enabledbydefault": {
+                    "type": "boolean"
+                },
+                "orderprefix": {
+                    "type": "string"
+                },
+                "organizationid": {
+                    "type": "string"
+                },
+                "organizationstate": {
+                    "type": "string"
+                },
+                "orgdborgsettings": {
+                    "type": "object",
+                    "properties": {
+                        "IsCommandingModifiedOnEnabled": {
+                            "type": "boolean"
+                        },
+                        "IsLinkToFabricEnabled": {
+                            "type": "boolean"
+                        },
+                        "IsFabricVirtualTableEnabled": {
+                            "type": "boolean"
+                        },
+                        "CanCreateApplicationStubUser": {
+                            "type": "boolean"
+                        },
+                        "EnableActivitiesTimeLinePerfImprovement": {
+                            "type": "number"
+                        },
+                        "EnableActivitiesFeatures": {
+                            "type": "number"
+                        },
+                        "IsRetentionEnabled": {
+                            "type": "boolean"
+                        },
+                        "IsArchivalEnabled": {
+                            "type": "boolean"
+                        },
+                        "AllowRoleAssignmentOnDisabledUsers": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "IsLinkToFabricEnabled",
+                        "EnableActivitiesTimeLinePerfImprovement"
+                    ]
+                },
+                "orginsightsenabled": {
+                    "type": "boolean"
+                },
+                "paipreviewscenarioenabled": {
+                    "type": "string"
+                },
+                "parsedtablecolumnprefix": {
+                    "type": "string"
+                },
+                "parsedtableprefix": {
+                    "type": "string"
+                },
+                "pastexpansionwindow": {
+                    "type": "integer"
+                },
+                "pcfdatasetgridenabled": {
+                    "type": "string"
+                },
+                "performactsyncafter": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "pinpointlanguagecode": {
+                    "type": "integer"
+                },
+                "plugintracelogsetting": {
+                    "type": "string"
+                },
+                "pmdesignator": {
+                    "type": "string"
+                },
+                "postmessagewhitelistdomains": {
+                    "type": "string"
+                },
+                "powerappsmakerbotenabled": {
+                    "type": "string"
+                },
+                "powerbiallowcrossregionoperations": {
+                    "type": "string"
+                },
+                "powerbiautomaticpermissionsassignment": {
+                    "type": "string"
+                },
+                "powerbicomponentscreate": {
+                    "type": "string"
+                },
+                "powerbifeatureenabled": {
+                    "type": "string"
+                },
+                "pricingdecimalprecision": {
+                    "type": "integer"
+                },
+                "privacystatementurl": {
+                    "type": "string"
+                },
+                "privilegeusergroupid": {
+                    "type": "string"
+                },
+                "privreportinggroupid": {
+                    "type": "string"
+                },
+                "privreportinggroupname": {
+                    "type": "string"
+                },
+                "productrecommendationsenabled": {
+                    "type": "boolean"
+                },
+                "quickactiontoopenrecordsinsidepaneenabled": {
+                    "type": "string"
+                },
+                "quickfindrecordlimitenabled": {
+                    "type": "string"
+                },
+                "quoteprefix": {
+                    "type": "string"
+                },
+                "recalculatesla": {
+                    "type": "boolean"
+                },
+                "recurrencedefaultnumberofoccurrences": {
+                    "type": "integer"
+                },
+                "recurrenceexpansionjobbatchinterval": {
+                    "type": "integer"
+                },
+                "recurrenceexpansionjobbatchsize": {
+                    "type": "integer"
+                },
+                "recurrenceexpansionsynchcreatemax": {
+                    "type": "integer"
+                },
+                "releasecadence": {
+                    "type": "integer"
+                },
+                "releasechannel": {
+                    "type": "string"
+                },
+                "releasewavename": {
+                    "type": "string"
+                },
+                "relevancesearchenabledbyplatform": {
+                    "type": "string"
+                },
+                "relevancesearchmodifiedon": {
+                    "type": "string"
+                },
+                "rendersecureiframeforemail": {
+                    "type": "boolean"
+                },
+                "reportinggroupid": {
+                    "type": "string"
+                },
+                "reportinggroupname": {
+                    "type": "string"
+                },
+                "reportscripterrors": {
+                    "type": "string"
+                },
+                "requireapprovalforqueueemail": {
+                    "type": "string"
+                },
+                "requireapprovalforuseremail": {
+                    "type": "string"
+                },
+                "resolvesimilarunresolvedemailaddress": {
+                    "type": "string"
+                },
+                "restrictGuestUserAccess": {
+                    "type": "boolean"
+                },
+                "restrictstatusupdate": {
+                    "type": "boolean"
+                },
+                "reverseproxyipaddresses": {
+                    "type": "string"
+                },
+                "rierrorstatus": {
+                    "type": "integer"
+                },
+                "samesitemodeforsessioncookie": {
+                    "type": "string"
+                },
+                "sampledataimportid": {
+                    "type": "string"
+                },
+                "schemanameprefix": {
+                    "type": "string"
+                },
+                "sendbulkemailinuci": {
+                    "type": "boolean"
+                },
+                "servestaticresourcesfromazurecdn": {
+                    "type": "string"
+                },
+                "sessionrecordingenabled": {
+                    "type": "string"
+                },
+                "sessiontimeoutenabled": {
+                    "type": "boolean"
+                },
+                "sessiontimeoutinmins": {
+                    "type": "string"
+                },
+                "sessiontimeoutreminderinmins": {
+                    "type": "string"
+                },
+                "sharepointdeploymenttype": {
+                    "type": "string"
+                },
+                "sharetopreviousowneronassign": {
+                    "type": "boolean"
+                },
+                "showkbarticledeprecationnotification": {
+                    "type": "string"
+                },
+                "showweeknumber": {
+                    "type": "boolean"
+                },
+                "signupoutlookdownloadfwlink": {
+                    "type": "string"
+                },
+                "slapausestates": {
+                    "type": "string"
+                },
+                "socialinsightsenabled": {
+                    "type": "boolean"
+                },
+                "socialinsightsinstance": {
+                    "type": "string"
+                },
+                "socialinsightstermsaccepted": {
+                    "type": "boolean"
+                },
+                "sortid": {
+                    "type": "string"
+                },
+                "sqlaccessgroupid": {
+                    "type": "string"
+                },
+                "sqlaccessgroupname": {
+                    "type": "string"
+                },
+                "sqmenabled": {
+                    "type": "boolean"
+                },
+                "supportuserid": {
+                    "type": "string"
+                },
+                "suppresssla": {
+                    "type": "boolean"
+                },
+                "suppressvalidationemails": {
+                    "type": "boolean"
+                },
+                "syncbulkoperationbatchsize": {
+                    "type": "integer"
+                },
+                "syncbulkoperationmaxlimit": {
+                    "type": "integer"
+                },
+                "syncoptinselection": {
+                    "type": "string"
+                },
+                "syncoptinselectionstatus": {
+                    "type": "string"
+                },
+                "systemuserid": {
+                    "type": "string"
+                },
+                "tablescopeddvsearchinapps": {
+                    "type": "boolean"
+                },
+                "tagmaxaggressivecycles": {
+                    "type": "integer"
+                },
+                "tagpollingperiod": {
+                    "type": "integer"
+                },
+                "taskbasedflowenabled": {
+                    "type": "boolean"
+                },
+                "teamschatdatasync": {
+                    "type": "boolean"
+                },
+                "telemetryinstrumentationkey": {
+                    "type": "string"
+                },
+                "textanalyticsenabled": {
+                    "type": "boolean"
+                },
+                "timeformatcode": {
+                    "type": "string"
+                },
+                "timeformatstring": {
+                    "type": "string"
+                },
+                "timeseparator": {
+                    "type": "string"
+                },
+                "timezoneruleversionnumber": {
+                    "type": "string"
+                },
+                "tokenexpiry": {
+                    "type": "integer"
+                },
+                "tokenkey": {
+                    "type": "string"
+                },
+                "tracelogmaximumageindays": {
+                    "type": "integer"
+                },
+                "trackingprefix": {
+                    "type": "string"
+                },
+                "trackingtokenidbase": {
+                    "type": "integer"
+                },
+                "trackingtokeniddigits": {
+                    "type": "integer"
+                },
+                "uniquespecifierlength": {
+                    "type": "integer"
+                },
+                "unresolveemailaddressifmultiplematch": {
+                    "type": "boolean"
+                },
+                "useinbuiltrulefordefaultpricelistselection": {
+                    "type": "string"
+                },
+                "uselegacyrendering": {
+                    "type": "boolean"
+                },
+                "usepositionhierarchy": {
+                    "type": "boolean"
+                },
+                "usequickfindviewforgridsearch": {
+                    "type": "boolean"
+                },
+                "useraccessauditinginterval": {
+                    "type": "integer"
+                },
+                "usereadform": {
+                    "type": "boolean"
+                },
+                "usergroupid": {
+                    "type": "string"
+                },
+                "userratingenabled": {
+                    "type": "string"
+                },
+                "useskypeprotocol": {
+                    "type": "string"
+                },
+                "utcconversiontimezonecode": {
+                    "type": "string"
+                },
+                "v3calloutconfighash": {
+                    "type": "string"
+                },
+                "validationmode": {
+                    "type": "string"
+                },
+                "versionnumber": {
+                    "type": "integer"
+                },
+                "webresourcehash": {
+                    "type": "integer"
+                },
+                "weekstartdaycode": {
+                    "type": "string"
+                },
+                "widgetproperties": {
+                    "type": "string"
+                },
+                "yammergroupid": {
+                    "type": "string"
+                },
+                "yammernetworkpermalink": {
+                    "type": "string"
+                },
+                "yammeroauthaccesstokenexpired": {
+                    "type": "string"
+                },
+                "yammerpostmethod": {
+                    "type": "string"
+                },
+                "yearstartweekcode": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "required": [
+        "$schema",
+        "devops",
+        "settings"
+    ]
+}

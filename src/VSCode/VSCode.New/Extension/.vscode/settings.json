@@ -13,6 +13,14 @@
     }
   },
 
-  "terminal.integrated.defaultProfile.windows": "OpenStrata"
+  "terminal.integrated.defaultProfile.windows": "OpenStrata",
+
+  "json.schemas": 
+  [
+      {
+        "fileMatch": ["environments.json"],
+        "url" : ".openstrata/schemas/devops-config-schema.json"
+      }
+  ]
 
 }

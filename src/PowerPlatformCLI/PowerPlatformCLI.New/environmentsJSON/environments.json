@@ -1,0 +1,20 @@
+{
+    "$schema": ".openstrata/schemas/devops-config-schema.json",   
+    "devops": {"stages": 
+        [
+            {"stageName": "", 
+            "envSettings":   {
+                    "authName": "",
+                    "environment": "",                
+                    "authMethod" : "applicationId",
+                    "tenant": "",
+                    "cloud" : "Public",
+                    "applicationId" : "" 
+                }
+            }       
+        ]},
+     "settings":
+     {
+        
+     }
+}

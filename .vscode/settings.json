@@ -13,6 +13,15 @@
     }
   },
 
-  "terminal.integrated.defaultProfile.windows": "OSDevops"
+  "terminal.integrated.defaultProfile.windows": "OSDevops",
+
+  "json.schemas": 
+  [
+      {
+        "fileMatch": ["src/PowerPlatformCLI/PowerPlatformCLI.New/environmentsJSON/environments.json"],
+        "url" : "src/PowerPlatformCLI/PowerPlatformCLI.New/environmentsJSON/.openstrata/schemas/devops-config-schema.json"
+      }
+  ]
+
 
 }

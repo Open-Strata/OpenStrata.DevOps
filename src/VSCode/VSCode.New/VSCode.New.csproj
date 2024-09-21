@@ -55,7 +55,11 @@
 		<Content Include="Extension\**\*" PackagePath="\content\Extension\" />
 		<Content Include="..\..\Git\Git.New\Extension\**\*" PackagePath="\content\Extension\" />	
 		<!-- <Content Include="..\..\Git\Git.New\Extension\**\*" Exclude="..\..\Git\Git.New\Extension\.template.config\*"  PackagePath="\content\Extension\" />	 -->
-		<Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\**\*" PackagePath="\content\Extension\" />			
+		<Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\**\*" PackagePath="\content\Extension\" />	
+		<Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\environmentsJSON\.openstrata\**\*" PackagePath="\content\Extension\.openstrata" />
+
+
+		<Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\environmentsJSON\**\*" PackagePath="\content\environmentsJSON\" />					
 		<!-- <Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\**\*" Exclude="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\.template.config\*"  PackagePath="\content\Extension\" />	 -->
 
 		<Content Include="Spawn\**\*" PackagePath="\content\Spawn\" />

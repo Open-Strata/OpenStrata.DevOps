@@ -2,6 +2,94 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "id": "http://openstrata.org/schemas/v-01/devops-config",
     "description": "A schema used by the various Open-Strata Power Platform devops extensions.",
+    "$defs" :
+        {
+            "guid" : 
+            {
+                "type" : "string",
+                "pattern" : "[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}",
+                "title": "Guid",
+                "description" : "Guid"
+            }, 
+            "wellKnowStages" :
+            {
+                "type": "string",
+                "enum":  ["dev", "qa", "uat", "prod"]
+            },
+            "publicEnv" : 
+            {
+                "type" : "string",
+                "pattern" : "https://[A-Za-z0-9-_]+\\.crm\\.dynamics\\.com[/]?",
+                "title": "Public Env Url",
+                "description" : "a public crm.dynamics.com url"                
+            },
+            "gccEnv" : 
+            {
+                "type" : "string",
+                "pattern" : "https://[A-Za-z0-9-_]+\\.crm9\\.dynamics\\.com[/]?",
+                "title": "US Gcc Env Url",
+                "description" : "a GCC crm9.dynamics.com url"                  
+            },
+            "gccHighEnv" : 
+            {
+                "type" : "string",
+                "pattern" : "https://[A-Za-z0-9-_]+\\.crm\\.microsoftdynamics\\.us[/]?",
+                "title": "US GCC High Env Url",
+                "description" : "a GCC crm.microsoftdynamics.us url"                 
+            },        
+            "DoDEnv" : 
+            {
+                "type" : "string",
+                "pattern" : "https://[A-Za-z0-9-_]+\\.crm\\.appsplatform\\.us[/]?",
+                "title": "US DoD Env Url",
+                "description" : "a GCC crm.microsoftdynamics.us url"                 
+            },  
+            "envUniqueName" : 
+            {
+                "type" : "string",
+                "pattern" : "unq[a-z0-9]{29}"
+            },   
+            "environment" : 
+                {
+                    "anyOf":
+                    [
+                        {"$ref" : "#/$defs/publicEnv"},
+                        {"$ref" : "#/$defs/gccEnv"},                        
+                        {"$ref" : "#/$defs/gccHighEnv"},
+                        {"$ref" : "#/$defs/DoDEnv"},
+                        {"$ref" : "#/$defs/guid"},                        
+                        {"$ref" : "#/$defs/envUniqueName"}                                       
+                    ],
+                    "default" : {}
+                } ,   
+            "stage" : 
+                {
+                    "type" : "string",
+                    "anyOf" : [
+                        {"pattern": "[A-Za-z0-9-_]{2,30}",
+                        "maxLength": 30,
+                        "minLength": 1},
+                        {"enum": ["dev", "qa", "uat", "prod"]}
+                    ]
+                },
+            "cloud" : 
+                {
+                    "type" : "string",
+                    "enum": ["Public", "UsGov", "UsGovHigh", "UsGovDod"],
+                    "default" : "Public",
+                    "description" : "The cloud instance to authenticate with."
+                },
+            "buildConfiguration" : 
+                {
+                    "type" : "string",
+                    "anyOf" : [
+                        {"pattern": "[A-Za-z0-9-_]{2,30}",
+                        "maxLength": 30,
+                        "minLength": 1},
+                        {"enum": ["Debug", "Release"]}
+                    ]
+                }                
+        },    
     "type": "object",
     "properties": {
         "$schema": {
@@ -17,14 +105,12 @@
                     "minItems": 1,
                     "items": {
                         "required": [
-                            "stageName"
+                            "stage","authSettings"
                         ],
                         "properties": {
-                            "stageName": {
-                                "type": "string",
-                                "minLength": 1
-                            },
-                            "envSettings": {
+                            "stage": {"$ref" : "#/$defs/stage"},
+                            "buildConfiguration" : {"$ref" : "#/$defs/buildConfiguration"},
+                            "authSettings": {
                                 "type": "object",
                                 "properties": {
                                     "authName": {
@@ -33,16 +119,13 @@
                                         "maxLength": 30,
                                         "description": "The name of an authentication profile you want used by the Power Platform Command Line to connect to the environment (maximum 30 characters)"
                                     },
-                                    "environment": {
-                                        "type": "string",
-                                        "minLength": 1,
-                                        "required": [
-                                            "authMethod"
-                                        ]
-                                    },
+                                    "environment": {"$ref" : "#/$defs/environment",
+                                                    "required": ["authMethod"]},
                                     "authMethod": {
                                         "type": "string",
                                         "enum": [
+                                            "pacAuthSelected",
+                                            "pacAuthName",
                                             "userName",
                                             "applicationId",
                                             "deviceCode",
@@ -54,33 +137,39 @@
                                             "environment"
                                         ]
                                     },
-                                    "tenant": {
-                                        "type": "string",
-                                        "minLength": 1
-                                    },
-                                    "cloud": {
-                                        "type": "string",
-                                        "minLength": 1
-                                    },
-                                    "applicationId": {
-                                        "type": "string",
-                                        "minLength": 1
-                                    },
+                                    "tenant": {"$ref" : "#/$defs/guid"}  ,
+                                    "cloud": {"$ref" : "#/$defs/cloud"},
+                                    "applicationId": {"$ref" : "#/$defs/guid"}  ,
                                     "userName": {
                                         "type": "string"
-                                    }
+                                    },
+                                    "secretName": {"type":"string"}
                                 },
                                 "required": [
                                     "authName"
                                 ],
-                                "anyOf": [
+                                "oneOf": [
                                     {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "pacAuthSelected"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "properties": {
+                                            "authMethod": {
+                                                "const": "pacAuthName"
+                                            }
+                                        }
+                                    },{
                                         "properties": {
                                             "authMethod": {
                                                 "const": "userName"
                                             }
                                         },
                                         "required": [
+                                            "environment",
                                             "userName"
                                         ]
                                     },
@@ -91,6 +180,7 @@
                                             }
                                         },
                                         "required": [
+                                            "environment",
                                             "tenant",
                                             "applicationId"
                                         ]
@@ -101,9 +191,7 @@
                                                 "const": "deviceCode"
                                             }
                                         },
-                                        "required": [
-                                            "userName"
-                                        ]
+                                        "required":[ "environment"]
                                     },
                                     {
                                         "properties": {
@@ -112,6 +200,7 @@
                                             }
                                         },
                                         "required": [
+                                            "environment",
                                             "tenant",
                                             "applicationID"
                                         ]
@@ -123,6 +212,7 @@
                                             }
                                         },
                                         "required": [
+                                            "environment",
                                             "tenant",
                                             "applicationId"
                                         ]
@@ -134,6 +224,7 @@
                                             }
                                         },
                                         "required": [
+                                            "environment",
                                             "tenant",
                                             "applicationId"
                                         ]
@@ -142,6 +233,11 @@
                             }
                         }
                     }
+                },
+                "defaultStage" : 
+                {
+                    "$ref" : "#/$defs/stage",
+                    "default": "dev"
                 }
             },
             "required": [
@@ -1556,8 +1652,8 @@
         }
     },
     "required": [
-        "$schema",
-        "devops",
-        "settings"
+        "devops"
     ]
+
+
 }

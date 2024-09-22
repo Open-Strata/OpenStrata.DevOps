@@ -1,4 +1,6 @@
 
+show-shortcut-note 'loading pac-shortcuts'
+ 
  $Global:PACShortcutsLoaded = $true
 
 if ([System.IO.File]::Exists("$PSScriptRoot\secrets.ps1"))

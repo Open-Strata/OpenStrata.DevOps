@@ -12,11 +12,11 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 <Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
 
 	<PropertyGroup>
-		<OpenStrataExtIdeDevopsAssemblyFile>$(MSBuildThisFileDirectory)..\Tasks\OpenStrata.Extension.IdeDevOps.MSBuild.dll</OpenStrataExtIdeDevopsAssemblyFile>
+		<OpenStrataExtIdeDevopsAssemblyFile>$(MSBuildThisFileDirectory)..\Tasks\OpenStrata.Devops.PowerPlatformCLI.dll</OpenStrataExtIdeDevopsAssemblyFile>
 	</PropertyGroup>
 
 	<!-- Tasks -->
-	<UsingTask TaskName="OpenStrata.Extension.IdeDevOps.MSBuild.Tasks.LoadStageIdeDevopsConfig" AssemblyFile="$(OpenStrataExtIdeDevopsAssemblyFile)"     TaskFactory="TaskHostFactory" />	
+	<UsingTask TaskName="OpenStrata.Devops.PowerPlatformCLI.Tasks.LoadStageIdeDevopsConfig" AssemblyFile="$(OpenStrataExtIdeDevopsAssemblyFile)"     TaskFactory="TaskHostFactory" />	
 
 	<PropertyGroup Label="pac commandline project related properties">
 		<MimicPacProjectBehavior Condition="'$(MimicPacProjectBehavior)' == ''">false</MimicPacProjectBehavior>

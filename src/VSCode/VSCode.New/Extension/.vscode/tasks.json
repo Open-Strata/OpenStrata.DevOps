@@ -11,9 +11,9 @@
       },
       "type": "shell",
 
-      "command": ".openstrata/scripts/init-vscode.ps1",
+      "command": ".openstrata/scripts/init.ps1",
       "windows": {
-        "command": ".openstrata\\scripts\\init-vscode.ps1"
+        "command": ".openstrata\\scripts\\init.ps1"
       },
       "presentation": {
         "reveal": "never",

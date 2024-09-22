@@ -1,0 +1,1 @@
+show-shortcut-note 'running git-init'

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OpenStrata.Extension.IdeDevOps.MSBuild.tasks
+namespace OpenStrata.Devops.PowerPlatformCLI.tasks
 {
 
     public abstract class BaseTask : Microsoft.Build.Utilities.Task

@@ -1,6 +1,10 @@
+
+$Global:HostInitComplete = $true
+
+
 # Terminate all 'dotnet' processes
 
-
+show-shortcut-note 'running vscode-init.ps1'
 
 # Purge items preventing a clean initialization.
 global:deep-clean

@@ -1,22 +1,21 @@
 
+function global:show-shortcut-note ([string] $note) {
+    Write-Host $note -ForegroundColor Black -BackgroundColor Yellow
+}
+
+show-shortcut-note 'loading shortcuts'
 
 ## Set OS-Globals
 
 $Global:OSRootPath = (get-item $PSScriptRoot ).parent.parent.FullName
 $Global:OSEnvJsonPath = "$Global:OSRootPath\environments.json"
 
-$Global:OSDevopsPath = "$OSRootPath\.devops"
-$Global:OSDevopsScriptsPath = "$OSDevopsPath\scripts"
-$Global:OSDevopsShortcutsPath = ""
+$Global:OSDevopsPath = "$Global:OSRootPath\.devops"
 
+$Global:OSHostsPath = "$Global:OSRootPath\.host"
+$Global:OSHostsShortcutsPath = "$Global:OSHostsPath\shortcuts.ps1"
+$Global:OSHostsInitPath = "$Global:OSHostsPath\init.ps1"
 
-
-
-
-
-function global:Show-Shortcut-Note ([string] $note) {
-    Write-Host $note -ForegroundColor Black -BackgroundColor Yellow
-}
  
 function global:get-solution-name
 {
@@ -96,19 +95,17 @@ function global:remove-locks {
 
 # Reset Host Shortcuts Loaded Variable.
 
-$Global:HostShortCutsLoaded = $true
+$Global:HostShortCutsLoaded = $false
 
-if (-not $Global:HostShortCutsLoaded -and [System.IO.File]::Exists("$OSRootPath\vscode-shortcuts.ps1"))
+if ([System.IO.File]::Exists($Global:OSHostsShortcutsPath))
 {
-    .$PSScriptRoot\vscode-shortcuts.ps1
+    .$Global:OSHostsShortcutsPath
 }
 
 if (-not $Global:HostShortCutsLoaded -and [System.IO.File]::Exists("$PSScriptRoot\vscode-shortcuts.ps1"))
 {
     .$PSScriptRoot\vscode-shortcuts.ps1
 }
-
-
 
 # loading git-shortcuts if they exist.
 if ([System.IO.File]::Exists("$PSScriptRoot\git-shortcuts.ps1"))
@@ -122,3 +119,5 @@ if ([System.IO.File]::Exists("$PSScriptRoot\pac-shortcuts.ps1"))
     .$PSScriptRoot\pac-shortcuts.ps1
 }
 
+# TODO:  Add support for custom shortcuts.
+#  Using .shortcut-scripts path.

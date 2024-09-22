@@ -4,11 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Xml.Linq;
-using System.Xml.XPath;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Nodes;
+using System.ComponentModel.Design;
 
 
-namespace OpenStrata.Extension.IdeDevOps.MSBuild.tasks
+namespace OpenStrata.Devops.PowerPlatformCLI.tasks
 {
     public class LoadStageIdeDevopsConfig : BaseTask
     {
@@ -43,9 +45,41 @@ namespace OpenStrata.Extension.IdeDevOps.MSBuild.tasks
 
             if (configFi.Exists)
             {
-                var configDoc = XDocument.Load(configFi.FullName);
 
-                var stageElement = configDoc.XPathSelectElement($"/IdeDevopsConfig/DevopsStage[@Name='{Stage}']");
+                var envJson = JsonNode.Parse(File.ReadAllText(configFi.FullName));
+
+                var stages = envJson?["devops"]?["stages"].AsArray();
+
+
+                foreach (var stage in stages)
+                {
+                    if (((string)stage["stage"])?.ToLower() == Stage.ToLower())
+                    {
+
+                        var authSettings = stage?["authSettings"];
+
+                        if (authSettings != null)
+                        {
+
+                            Environment = (string)authSettings?["environment"] ?? "";
+                            PacAuthName = (string)authSettings?["authName"] ?? "";
+                            Cloud = (string)authSettings?["cloud"] ?? "";
+                            ApplicationId = (string)authSettings?["applicationId"] ?? "";
+                            TenantId = (string)authSettings?["tenant"] ?? "";
+
+                            return true;
+                        }
+                        return TaskFinishedWithWarning($"The {Stage} stage in {ConfigPath} does not contain an authSettings property");
+                    }
+                }
+
+                return TaskFinishedWithWarning($"{ConfigPath} does not contain an entry for the stage: {Stage}.");
+
+
+            }
+            else {
+
+                return TaskFinishedWithWarning($"{ConfigPath} does not exist.");
 
                 // <IdeDevopsConfig >
                 // <DevopsStage Name="dev">
@@ -57,15 +91,8 @@ namespace OpenStrata.Extension.IdeDevOps.MSBuild.tasks
                 //  </DevopsStage>
                 //</IdeDevopsConfig>
 
-                Environment = stageElement.Element("Environment")?.Value ?? "";
-                PacAuthName = stageElement.Element("PacAuthName")?.Value ?? "";
-                Cloud = stageElement.Element("Cloud")?.Value ?? "";
-                ApplicationId = stageElement.Element("ApplicationId")?.Value ?? "";
-                TenantId = stageElement.Element("TenantId")?.Value ?? "";
-
             }
 
-            return true;
         }
     }
 }

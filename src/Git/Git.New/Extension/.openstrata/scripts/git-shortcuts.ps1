@@ -1,4 +1,5 @@
 
+show-shortcut-note 'loading git-shortcuts'
 
 
 function global:dev2qa {

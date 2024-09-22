@@ -1,5 +1,10 @@
 ﻿
+show-shortcut-note 'loading vscode-shortcuts'
+
+
 $Global:HostShortCutsLoaded = $true
+
+
 
 function global:ensure-host-msbuild{
     global:killdotnet

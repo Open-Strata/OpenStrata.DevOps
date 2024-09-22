@@ -95,12 +95,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\build\$(OpenStrataPackageName).props"  />
-		<None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\buildTransitive\$(OpenStrataPackageName).props" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" />
-		<None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\buildMultiTargeting\$(OpenStrataPackageName).props" Condition="'$(IsMultiTargetingBuild)' == 'true'" />
-		<None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\build\$(OpenStrataPackageName).targets" />
-		<None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\buildTransitive\$(OpenStrataPackageName).targets" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" />
-		<None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\buildMultiTargeting\$(OpenStrataPackageName).targets" Condition="'$(IsMultiTargetingBuild)' == 'true'" />
+	    <None Include="Build\**\*.*" Pack="true" PackagePath="\build\"  />
+        <None Include="Build\**\*.*" Pack="true" PackagePath="\buildTransitive\" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" />
+		<None Include="Build\**\*.*" Pack="true" PackagePath="\buildMultiTargeting\" Condition="'$(IsMultiTargetingBuild)' == 'true'" />				
+		<!-- <None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\build\$(OpenStrataPackageName).props"  /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\buildTransitive\$(OpenStrataPackageName).props" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\buildMultiTargeting\$(OpenStrataPackageName).props" Condition="'$(IsMultiTargetingBuild)' == 'true'" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\build\$(OpenStrataPackageName).targets" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\buildTransitive\$(OpenStrataPackageName).targets" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\buildMultiTargeting\$(OpenStrataPackageName).targets" Condition="'$(IsMultiTargetingBuild)' == 'true'" /> -->
 	
 	
 		<Content Include="Content\**\*" PackagePath="\content\" />

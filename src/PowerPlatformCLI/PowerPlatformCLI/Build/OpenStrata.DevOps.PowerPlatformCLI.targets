@@ -29,8 +29,12 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 		<ReposLocationDir Condition="'$(ReposLocationDir)'=='' and '$(SolutionDir)'!=''">$(SolutionDir)..\</ReposLocationDir>
 		<ReposLocationDir Condition="'$(ReposLocationDir)'=='' and '$(ProjectDir)'!=''">$(ProjectDir)..\..\</ReposLocationDir>
 
+        <OpenStrataPropsPath>$([MSBuild]::GetPathOfFileAbove('openstrata.props', '$(MSBuildProjectDirectory)'))</OpenStrataPropsPath>
 
-		<IdeDevopsConfigPath>$(SolutionDir)ide-devops.config.user</IdeDevopsConfigPath>
+
+		<DevopsConfigFileName Condition="'$(DevopsConfigFileName)'==''" >environments.json</DevopsConfigFileName>
+		<DevopsConfigFilePath Condition="'$(DevopsConfigFilePath)'==''">$([MSBuild]::GetPathOfFileAbove('$(DevopsConfigFileName)', '$(MSBuildProjectDirectory)'))</DevopsConfigFilePath>
+		<Stage Condition="'$(Stage)'==''" >dev</Stage> 			   
 
 	</PropertyGroup>	
 	
@@ -102,24 +106,27 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 	<Target Name="Debug" DependsOnTargets="$(DebugDependsOn)" />
 
-	<Target Name="EnsureIdeDevopsConfig" Condition="!Exists('$(IdeDevopsConfigPath)')">
+	<Target Name="EnsureIdeDevopsConfig" Condition="!Exists('$(DevopsConfigFilePath)')">
 
-		<Warning Text="ide-devops.config.user does not exist.  Creating template file now." />
+		<Warning Text="$(DevopsConfigFileName) does not exist.  Creating template file now." />
 
-		<Copy
+		<!-- <Copy
 		SourceFiles="$(MSBuildThisFileDirectory)..\templates\ide-devops.config.user.template"
 		DestinationFiles="$(SolutionDir)ide-devops.config.user"
-        />
+        /> -->
 
-		<Error Text="Unable to continue. Update ide-devops.config and try again" />
+		<Exec Command="dotnet new os-envjson --stage $(stage)" />
+
+		<Error Text="Unable to continue. Update $(DevopsConfigFileName) and try again" />
 
 	</Target>
 
-	<Target Name="LoadStageIdeDevopsConfig" Condition="Exists('$(IdeDevopsConfigPath)')" >
-		<Warning Text="Loading Stage IdeDevopsConfig" />
+	<Target Name="LoadStageIdeDevopsConfig" Condition="Exists('$(DevopsConfigFilePath)')" >
+
+		<Message Text="Loading Stage IdeDevopsConfig" />
 
 		<LoadStageIdeDevopsConfig
-			ConfigPath="$(IdeDevopsConfigPath)"
+			ConfigPath="$(DevopsConfigFilePath)"
 			Stage="$(Stage)"
 		>
 			<Output TaskParameter="Environment"

@@ -1,4 +1,6 @@
 
+ $Global:PACShortcutsLoaded = $true
+
 if ([System.IO.File]::Exists("$PSScriptRoot\secrets.ps1"))
 {
     . $PSScriptRoot\secrets.ps1
@@ -19,6 +21,25 @@ function global:get-osenvjson
 }
 
 $Global:OSEnvJSON = global:get-osenvjson
+$Global:AuthSettings = ($envJson.devops.stages | Where-Object {$_.stage -eq $stage}).authSettings
+
+function global:ensure-osenvjson
+{
+    Show-Shortcut-Note '$Global:OSEnvJSON = global:get-osenvjson'
+    $Global:OSEnvJSON = global:get-osenvjson
+}
+
+function global:get-authSettings
+{
+    param ($stage)
+
+    ensure-osenvjson
+
+
+
+
+}
+
 
 function global:auth 
 {

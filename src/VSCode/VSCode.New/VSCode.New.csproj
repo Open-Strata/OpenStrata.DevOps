@@ -56,6 +56,9 @@
 		<Content Include="..\..\Git\Git.New\Extension\**\*" PackagePath="\content\Extension\" />	
 		<!-- <Content Include="..\..\Git\Git.New\Extension\**\*" Exclude="..\..\Git\Git.New\Extension\.template.config\*"  PackagePath="\content\Extension\" />	 -->
 		<Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\Extension\**\*" PackagePath="\content\Extension\" />	
+		<Content Include="..\..\SharedExtension\**\*" PackagePath="\content\Extension\" />			
+
+
 		<Content Include="..\..\PowerPlatformCLI\PowerPlatformCLI.New\environmentsJSON\.openstrata\**\*" PackagePath="\content\Extension\.openstrata" />
 
 

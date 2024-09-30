@@ -99,19 +99,19 @@ function global:os-update {
 
     if ($PSBoundParameters.ContainsKey('version'))
     {
-        Show-Shortcut-Note "dotnet new os-essentials -n $solutionName -ov $version --force"
-        dotnet new os-essentials -n $solutionName -ov $version --force
+        Show-Shortcut-Note "dotnet new os-essentials -o $Global:OSRootPath -n $solutionName -ov $version --force"
+        dotnet new os-essentials -o $Global:OSRootPath -n $solutionName -ov $version --force
         
-        Show-Shortcut-Note "dotnet new os-props -n $solutionName -ov $version --force"
-        dotnet new os-props -n $solutionName -ov $version --force
+        Show-Shortcut-Note "dotnet new os-props -o $Global:OSRootPath -n $solutionName -ov $version --force"
+        dotnet new os-props -o $Global:OSRootPath -n $solutionName -ov $version --force
     }
     else
     {
-        Show-Shortcut-Note "dotnet new os-essentials -n $solutionName --force"
-        dotnet new os-essentials -n $solutionName --force
+        Show-Shortcut-Note "dotnet new os-essentials -o $Global:OSRootPath -n $solutionName --force"
+        dotnet new os-essentials -o $Global:OSRootPath -n $solutionName --force
     }
-    Show-Shortcut-Note "dotnet new os-vscode -n $solutionName --force"
-    dotnet new os-vscode -n $solutionName --force
+    Show-Shortcut-Note "dotnet new os-vscode -o $Global:OSRootPath -n $solutionName --force"
+    dotnet new os-vscode -o $Global:OSRootPath -n $solutionName --force
 
    #  Show-Shortcut-Note "global:os-git-update $solutionName" 
    # global:os-git-update $solutionName
@@ -123,8 +123,8 @@ function global:os-update {
    # Adding new one-time files if they don't exist
     if(-Not [System.IO.File]::Exists("openstrata.props"))
     {
-        Show-Shortcut-Note "dotnet new os-osprops"        
-        dotnet new os-props
+        Show-Shortcut-Note "dotnet new os-props -o $Global:OSRootPath"        
+        dotnet new os-props -o $Global:OSRootPath 
     }
 
 
@@ -164,17 +164,16 @@ function global:ensure-globals
 {
    $global:SolutionName = global:get-solution-name
 
-
 }
 
-if ([System.IO.File]::Exists("shortcuts-local.ps1"))
+if ([System.IO.File]::Exists("$Global:OSRootPath\shortcuts-local.ps1"))
 {
-   . .\shortcuts-local.ps1
+   . $Global:OSRootPath\shortcuts-local.ps1
 }
 
-if ([System.IO.File]::Exists("..\shortcuts-global.ps1"))
+if ([System.IO.File]::Exists("..\$Global:OSRootPath\shortcuts-global.ps1"))
 {
-    . .\shortcuts-global.ps1
+    . ..\$Global:OSRootPath\shortcuts-global.ps1
 }
 
 

@@ -102,7 +102,6 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 	</Target>
 
-
 	<PropertyGroup>
 		<PushPcfTargets>$(PushPcfTargets);PCFReferencesPushUpdate</PushPcfTargets>
 	</PropertyGroup>
@@ -121,6 +120,24 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 		</MSBuild>
 
 	</Target>
+
+	<Target Name="EnsureExportIncludes" Returns="@(ExportSolIncludes)" >
+
+		<ItemGroup>
+			<ExportSolIncludes Include="autonumbering" Condition="'$(IncludeAutoNumbering)'=='true'" />
+			<ExportSolIncludes Include="calendar" Condition="'$(IncludeCalendar)'=='true'" />
+			<ExportSolIncludes Include="customization" Condition="'$(IncludeCustomization)'=='true'" />
+			<ExportSolIncludes Include="emailtracking" Condition="'$(IncludeEmailTracking)'=='true'" />
+			<ExportSolIncludes Include="externalapplications" Condition="'$(IncludeExternalApplications)'=='true'" />
+			<ExportSolIncludes Include="general" Condition="'$(IncludeGeneral)'=='true'" />
+			<ExportSolIncludes Include="isvconfig" Condition="'$(IncludeISVConfig)'=='true'" />
+			<ExportSolIncludes Include="marketing" Condition="'$(IncludeMarketing)'=='true'" />
+			<ExportSolIncludes Include="outlooksynchronization" Condition="'$(IncludeOutlookSynchronization)'=='true'" />
+			<ExportSolIncludes Include="relationshiproles" Condition="'$(IncludeRelationshipRoles)'=='true'" />
+			<ExportSolIncludes Include="sales" Condition="'$(IncludeSales)'=='true'" />
+		</ItemGroup>
+
+	</Target>	
 
 
 </Project>

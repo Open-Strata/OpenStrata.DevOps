@@ -30,13 +30,19 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 	
 	<PropertyGroup>
 
-		<LocalDebugPackageFeedPath Condition="'$(LocalDebugPackageFeedPath)' == ''">C:\DebugPackages</LocalDebugPackageFeedPath>
+	  <LocalDebugPackageFeedPath Condition="'$(LocalDebugPackageFeedPath)' == ''">C:\DebugPackages</LocalDebugPackageFeedPath>
 
-		<PushAfterBuild Condition="'$(PushAfterBuild)'==''">false</PushAfterBuild>
-		<PushAfterBuild Condition="'$(Configuration)'=='Release'">true</PushAfterBuild>
+	  <PushAfterBuild Condition="'$(PushAfterBuild)'==''">false</PushAfterBuild>
+	  <PushAfterBuild Condition="'$(Configuration)'=='Release' And '$(PushOnRelease)'=='true'">true</PushAfterBuild>
 
+      <OpenStrataPropsPath Condition="'$(OpenStrataPropsPath)' == ''">$([MSBuild]::GetPathOfFileAbove('openstrata.props', '$(MSBuildProjectDirectory)'))</OpenStrataPropsPath>
+      <DotOstrataPath Condition="'$(DotOstrataPath)' == '' And '$(OpenStrataPropsPath)' != ''">$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildProjectDirectory)','$(OpenStrataPropsPath)')).openstrata\</DotOstrataPath>
       <DotOstrataPath Condition="'$(DotOstrataPath)' == '' And '$(SolutionDir)' != ''">$(SolutionDir)\.openstrata\</DotOstrataPath>               
       <DotOstrataPath Condition="'$(DotOstrataPath)' == ''">$(MSBuildProjectDirectory)..\.openstrata\</DotOstrataPath>
+
+	  <DotOstrataTmpPath Condition="'$(DotOstrataTmpPath)' == ''">$(DotOstrataPath)tmp\</DotOstrataTmpPath>
+	  <DotOstrataLocksPath Condition="'$(DotOstrataLocksPath)' == ''">$(DotOstrataPath)locks\</DotOstrataLocksPath>	 
+	  <DotOstrataLocksPath Condition="'$(DotOstrataLocksPath)' == ''">$(DotOstrataPath)gitignore\</DotOstrataLocksPath>	 	   
 
 	</PropertyGroup>
 

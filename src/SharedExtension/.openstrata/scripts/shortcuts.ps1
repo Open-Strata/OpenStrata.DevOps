@@ -20,7 +20,7 @@ $Global:OSHostsInitPath = "$Global:OSHostsPath\init.ps1"
 function global:get-solution-name
 {
 
-    $solXmlFile = ".\solution\metadata\other\solution.xml"
+    $solXmlFile = "$Global:OSRootPath\solution\metadata\other\solution.xml"
 
     if (-Not [System.IO.File]::Exists($solXmlFile))
     {
@@ -37,7 +37,9 @@ function global:add-plugin {
 
     $solutionName = global:get-solution-name
 
-    dotnet new os-plugin -n $solutionName
+    Show-Shortcut-Note "dotnet new os-plugin -o $Global:OSRootPath -n $solutionName"    
+
+    dotnet new os-plugin -o $Global:OSRootPath -n $solutionName
 
 }
 
@@ -45,7 +47,9 @@ function global:add-powerpages {
 
     $solutionName = global:get-solution-name
 
-    dotnet new os-powerpages -n $solutionName
+    Show-Shortcut-Note "dotnet new os-powerpages -o $Global:OSRootPath -n $solutionName"   
+
+    dotnet new os-powerpages -o $Global:OSRootPath -n $solutionName
 
 }
 
@@ -53,7 +57,9 @@ function global:add-doctemplates {
 
     $solutionName = global:get-solution-name
 
-    dotnet new os-doctemplates -n $solutionName
+    Show-Shortcut-Note "dotnet new os-doctemplates -o $Global:OSRootPath -n $solutionName"  
+
+    dotnet new os-doctemplates -o $Global:OSRootPath -n $solutionName
 
 }
 
@@ -87,8 +93,11 @@ function global:restore {
 }
 
 function global:remove-locks {
-    Show-Shortcut-Note "Remove-Item -Path .openstrata\**\*.lck -Force"  
-    Remove-Item -Path .openstrata\**\*.lck -Force
+
+    $locksPath = "$Global:OSRootPathopenstrata\**\*.lck"    
+
+    Show-Shortcut-Note "Remove-Item -Path $locksPath -Force"  
+    Remove-Item -Path $locksPath -Force
 }
 
 # Loading Hosts shortcuts....

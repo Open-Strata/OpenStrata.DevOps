@@ -96,4 +96,4 @@ function global:killdotnet {
     } else {
         Write-Host "No 'dotnet' processes found."
     }
-    }
+}

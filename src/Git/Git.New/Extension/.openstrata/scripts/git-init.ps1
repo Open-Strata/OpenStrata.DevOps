@@ -2,12 +2,12 @@ show-shortcut-note 'running git-init'
 
 # TODO: -- Default Dev Branch
 
-if (not $Global:OSGitDefaultBranch){
+if (-not $Global:OSGitDefaultBranch){
    Write-Host "Setting Global Variable OSGitDefaultBranch Branch to 'main'"
    $Global:OSGitDefaultBranch = 'main'    
 }
 
-if (not $Global:OSGitDevBranch){
+if (-not $Global:OSGitDevBranch){
    Write-Host "Setting Global Variable OSDevBranch Branch to 'dev'"
    $Global:OSDevBranch = 'dev'
 }

@@ -3,7 +3,7 @@
 	<Import Project="..\gitignore\OpenStrata.DevOps.VSCode.gitignore.props" Condition="Exists('..\gitignore\OpenStrata.DevOps.VSCode.gitignore.props')"     />
 
 	<ItemGroup>
-		<PackageReference Include="OpenStrata.DevOps.VSCode" Version="1.*" Condition="'$(IsVSCodeBuild)'=='true'" />
+		<PackageReference Include="OpenStrata.DevOps.VSCode" Version="1.*" Condition="'$(IsVSCodeBuild)'=='true'" PrivateAssets="All"  />
 	</ItemGroup>
 	
 </Project>

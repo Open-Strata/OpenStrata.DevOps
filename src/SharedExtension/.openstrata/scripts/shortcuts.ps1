@@ -16,6 +16,9 @@ $Global:OSHostsPath = "$Global:OSRootPath\.host"
 $Global:OSHostsShortcutsPath = "$Global:OSHostsPath\shortcuts.ps1"
 $Global:OSHostsInitPath = "$Global:OSHostsPath\init.ps1"
 
+##  Not sure if this variable does anything...  
+$env:MSBUILDDISABLENODEREUSE = $true
+
  
 function global:get-solution-name
 {
@@ -65,16 +68,16 @@ function global:add-doctemplates {
 
 function global:packdocs {
     Show-Shortcut-Note "dotnet restore" 
-    Show-Shortcut-Note "dotnet msbuild -t:PackDocs" 
+    Show-Shortcut-Note "dotnet msbuild -t:PackDocs  -nodereuse:false" 
     dotnet restore
-    dotnet msbuild -t:PackDocs
+    dotnet msbuild -t:PackDocs -nodereuse:false
 }
 
 function global:unpackdocs {
     Show-Shortcut-Note "dotnet restore" 
     Show-Shortcut-Note "dotnet msbuild -t:UnpackDocs"
     dotnet restore    
-    dotnet msbuild -t:UnpackDocs
+    dotnet msbuild -t:UnpackDocs -nodereuse:false
 }
 
 function global:build {
@@ -83,7 +86,7 @@ function global:build {
     killdotnet
 
     dotnet restore
-    dotnet msbuild
+    dotnet msbuild -nodereuse:false
 }
 
 function global:restore {

@@ -29,6 +29,9 @@ namespace OpenStrata.Devops.PowerPlatformCLI.tasks
         public string PacAuthName { get; set; }
 
         [Output]
+        public string AuthMethod { get; set; }        
+
+        [Output]
         public string Cloud { get; set; }
 
         [Output]
@@ -62,7 +65,8 @@ namespace OpenStrata.Devops.PowerPlatformCLI.tasks
                         {
 
                             Environment = (string)authSettings?["environment"] ?? "";
-                            PacAuthName = (string)authSettings?["authName"] ?? "";
+                            PacAuthName = (string)authSettings?["authName"] ?? "";                            
+                            AuthMethod = (string)authSettings?["authMethod"] ?? "";
                             Cloud = (string)authSettings?["cloud"] ?? "";
                             ApplicationId = (string)authSettings?["applicationId"] ?? "";
                             TenantId = (string)authSettings?["tenant"] ?? "";

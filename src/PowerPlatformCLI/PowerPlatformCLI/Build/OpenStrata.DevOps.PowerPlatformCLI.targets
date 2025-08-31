@@ -138,7 +138,9 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 			<Output TaskParameter="ApplicationId"
 							  PropertyName="PacAuthAppId" />
 			<Output TaskParameter="TenantId"
-							  PropertyName="PacAuthTenantId" />			
+							  PropertyName="PacAuthTenantId" />		
+			<Output TaskParameter="AuthMethod"
+							  PropertyName="AuthMethod" />								  	
 		</LoadStageIdeDevopsConfig>
 		
 	</Target>
@@ -164,11 +166,11 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 	<Target Name="PacSelectOrg" DependsOnTargets="EnsurePacAuthProfile" >
 
-		<Message Text="Attempting to select org using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'==''" />
-		<Exec Command="pac org select -env $(PacOrgName)" Condition="'$(PacEnvUrl)'==''"/>
+		<Message Text="Attempting to select org using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'=='' And $(AuthMethod)'!='applicationId'" />
+		<Exec Command="pac org select -env $(PacOrgName)" Condition="'$(PacEnvUrl)'=='' And $(AuthMethod)'!='applicationId'"/>
 
-		<Message Text="Attempting to select org using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!=''" />
-		<Exec Command="pac org select -env $(PacEnvUrl)" Condition="'$(PacEnvUrl)'!=''"/>
+		<Message Text="Attempting to select org using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!='' And $(AuthMethod)'!='applicationId'" />
+		<Exec Command="pac org select -env $(PacEnvUrl)" Condition="'$(PacEnvUrl)'!='' And $(AuthMethod)'!='applicationId'"/>
 
 	</Target>
 
@@ -215,11 +217,11 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 	<Target Name="GetBackupDate" DependsOnTargets="GetOrgWho" Returns="$(SolutionBackupDate)" >
 
-		<Message Text="Attempting to select org using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'==''" />
-		<Exec Command="pac org select -env $(PacOrgName)" Condition="'$(PacEnvUrl)'==''"/>
+		<Message Text="Attempting to select org using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'==''  And $(AuthMethod)'!='applicationId'" />
+		<Exec Command="pac org select -env $(PacOrgName)" Condition="'$(PacEnvUrl)'==''  And $(AuthMethod)'!='applicationId'"/>
 
-		<Message Text="Attempting to select org using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!=''" />
-		<Exec Command="pac org select -env $(PacEnvUrl)" Condition="'$(PacEnvUrl)'!=''"/>
+		<Message Text="Attempting to select org using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!=''  And $(AuthMethod)'!='applicationId'" />
+		<Exec Command="pac org select -env $(PacEnvUrl)" Condition="'$(PacEnvUrl)'!='' And $(AuthMethod)'!='applicationId'"/>
 
 		<Exec Command="pac admin list-backups -env $(PacOrgName)"
 			  ConsoleToMSBuild="true"

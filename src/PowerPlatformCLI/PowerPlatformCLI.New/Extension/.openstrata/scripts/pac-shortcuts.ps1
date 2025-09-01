@@ -92,8 +92,8 @@ function global:auth
         Show-Shortcut-Note "pac org select -env $env"
         pac org select -env $env
 
-        Show-Shortcut-Note "pac auth who"        
-        pac auth who
+        Show-Shortcut-Note "pac org who"        
+        pac org who
         return
     }
     elseif ($authName -eq $null)
@@ -115,8 +115,8 @@ function global:auth
         Show-Shortcut-Note "pac org select -env $env"
         pac org select -env $env
 
-        Show-Shortcut-Note "pac auth who"        
-        pac auth who
+        Show-Shortcut-Note "pac org who"        
+        pac org who
         return
     }
     else

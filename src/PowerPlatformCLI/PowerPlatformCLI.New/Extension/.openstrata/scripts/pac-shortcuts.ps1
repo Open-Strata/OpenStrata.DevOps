@@ -10,6 +10,7 @@ if ([System.IO.File]::Exists("$PSScriptRoot\secrets.ps1"))
 
 $Global:OSRootPath = (get-item $PSScriptRoot ).parent.parent.FullName
 $Global:OSEnvJsonPath = "$Global:OSRootPath\environments.json"
+$Global:GitRoot = git rev-parse --show-toplevel
 
 function global:get-osenvjson
 {
@@ -253,7 +254,7 @@ function global:publish {
 }
 
 function global:pushplugin {
-    Show-Shortcut-Note "git add $OSRootPath/plugin/*"
+    Show-Shortcut-Note "git add $GitRoot/plugin/*"
     Show-Shortcut-Note "git commit -m "commit to pushplugin""
     #Show-Shortcut-Note "dotnet msbuild"
     Show-Shortcut-Note "dotnet msbuild -t:PushPlugin"
@@ -263,7 +264,7 @@ function global:pushplugin {
     auth
 
     dotnet restore
-    git add $OSRootPath/plugin/*
+    git add $GitRoot/Plugin/*
     git commit -m "commit to pushplugin"
     #dotnet msbuild
     dotnet msbuild -t:Build -t:PushPlugin

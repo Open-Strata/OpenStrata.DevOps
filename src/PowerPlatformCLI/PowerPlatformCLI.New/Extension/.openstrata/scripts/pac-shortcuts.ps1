@@ -253,15 +253,17 @@ function global:publish {
 }
 
 function global:pushplugin {
-    Show-Shortcut-Note "git add plugin/*"
+    Show-Shortcut-Note "git add $OSRootPath/plugin/*"
     Show-Shortcut-Note "git commit -m "commit to pushplugin""
     #Show-Shortcut-Note "dotnet msbuild"
     Show-Shortcut-Note "dotnet msbuild -t:PushPlugin"
 
     killdotnet
 
+    auth
+
     dotnet restore
-    git add plugin/*
+    git add $OSRootPath/plugin/*
     git commit -m "commit to pushplugin"
     #dotnet msbuild
     dotnet msbuild -t:Build -t:PushPlugin

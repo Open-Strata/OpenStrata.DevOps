@@ -261,9 +261,9 @@ function global:pushplugin {
 
     killdotnet
 
-    auth
+    #auth
 
-    dotnet restore
+    #dotnet restore
     git add $GitRoot/Plugin/*
     git commit -m "commit to pushplugin"
     #dotnet msbuild

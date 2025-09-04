@@ -257,7 +257,7 @@ function global:pushplugin {
     Show-Shortcut-Note "git add $GitRoot/plugin/*"
     Show-Shortcut-Note "git commit -m "commit to pushplugin""
     #Show-Shortcut-Note "dotnet msbuild"
-    Show-Shortcut-Note "dotnet msbuild -t:PushPlugin"
+    Show-Shortcut-Note "dotnet msbuild -t:rebuild -t:PushPlugin ./Plugin"
 
     killdotnet
 
@@ -267,7 +267,8 @@ function global:pushplugin {
     git add $GitRoot/Plugin/*
     git commit -m "commit to pushplugin"
     #dotnet msbuild
-    dotnet msbuild -t:Build -t:PushPlugin
+
+    dotnet msbuild -t:rebuild -t:PushPlugin ./Plugin
 }
 
 function global:uploadsite {

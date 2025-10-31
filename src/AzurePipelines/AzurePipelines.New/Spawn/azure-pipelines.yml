@@ -14,7 +14,7 @@ parameters:
     default: ALMRestoreFeed.1
   - name: ALMDotNetTempates
     type: string
-    default: OpenStrata.NET.Templates
+    default: OpenStrata.NET.New
   - name: InitialVersionTag
     type: string
     default: 1.0

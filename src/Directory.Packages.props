@@ -18,10 +18,16 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 		<Version>1.0.2</Version>
 		
-		<LocalPackageFeed>C:\Packages</LocalPackageFeed>
-
+		<!-- Local development feed for testing -->
+		<LocalPackageFeed Condition="'$(CI)'!='true'">C:\Packages</LocalPackageFeed>
+		<!-- CI/CD temporary package location -->
+		<LocalPackageFeed Condition="'$(CI)'=='true'">$(RUNNER_TEMP)/packages</LocalPackageFeed>
+		
+		<!-- Public NuGet feed for releases -->
+		<PublicPackageFeed>https://api.nuget.org/v3/index.json</PublicPackageFeed>
+		
 		<PushAfterBuild Condition="'$(PushAfterBuild)'==''">false</PushAfterBuild>
-		<PushAfterBuild Condition="'$(Configuration)'=='Release'">true</PushAfterBuild>		
+		<PushAfterBuild Condition="'$(Configuration)'=='Release' AND '$(CI)'=='true'">true</PushAfterBuild>		
 
 	</PropertyGroup>
 

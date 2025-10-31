@@ -29,7 +29,7 @@ steps:
 
 - pwsh: |
         # dotnet nuget add source ALMRestoreFeed --configfile $(nugetConfigPath)
-        dotnet new install OJAG.OpenStrata.NET.Templates --nuget-source $(ALMRestoreFeed)
+        dotnet new install OpenStrata.NET.New --nuget-source $(ALMRestoreFeed)
         echo 'new ojagdevops -n ${{ parameters.wh_payload.solutionName }} --force'
         dotnet new ojagdevops -n ${{ parameters.wh_payload.solutionName }} --force
         echo 'new ojaggitignore -n ${{ parameters.wh_payload.solutionName }} --force'        

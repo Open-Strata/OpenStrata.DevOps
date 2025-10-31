@@ -201,14 +201,21 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 		<PropertyGroup>
 			<PushPackagePath>$(ProjectDir)$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg</PushPackagePath>
+			<PushSource Condition="'$(CI)'=='true'">$(PublicPackageFeed)</PushSource>
+			<PushSource Condition="'$(CI)'!='true'">$(LocalPackageFeed)</PushSource>
+			<PushApiKey Condition="'$(CI)'=='true'">$(NUGET_API_KEY)</PushApiKey>
+			<PushApiKey Condition="'$(CI)'!='true'">AzureDevOps</PushApiKey>
 		</PropertyGroup>
 
+		<!-- Copy to local feed for development -->
 		<Copy
 		SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg"
-		DestinationFolder="c:\packages" Condition="Exists('$(PushPackagePath)')"
+		DestinationFolder="c:\packages" Condition="Exists('$(PushPackagePath)') AND '$(CI)'!='true'"
       />
 
-		<Exec Command='dotnet nuget push "$(PushPackagePath)" -k AzureDevOps --skip-duplicate' Condition="Exists('$(PushPackagePath)')" />
+		<!-- Push to appropriate feed based on environment -->
+		<Exec Command='dotnet nuget push "$(PushPackagePath)" --source "$(PushSource)" --api-key "$(PushApiKey)" --skip-duplicate' 
+			  Condition="Exists('$(PushPackagePath)')" />
 
 	</Target>
 

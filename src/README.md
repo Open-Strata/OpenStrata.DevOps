@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![NuGet](https://img.shields.io/nuget/v/OpenStrata.DevOps.AzurePipelines.svg)](https://www.nuget.org/packages/OpenStrata.DevOps.AzurePipelines/)
-[![Build Status](https://github.com/Open-Strata/OpenStrata.DevOps/workflows/CI/badge.svg)](https://github.com/Open-Strata/OpenStrata.DevOps/actions)
 
 > MSBuild-based DevOps automation tools for Microsoft Power Platform and Azure development workflows
 

@@ -195,6 +195,7 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 		<Message Text="To push after build, use the command 'dotnet build -p:PushAfterBuild=true" Importance="high" />
 	</Target>
 
+	
 	<Target Name="PushPackage" AfterTargets="Pack" Condition="'$(PushAfterBuild)'=='true'"
 			 DependsOnTargets="$(MoveNugetPackageToLocalPackageFeedDependsOn)">
 		<Message Text="Attempting to push package" Importance="high" />
@@ -220,6 +221,7 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 			  Condition="Exists('$(PushPackagePath)')" />
 
 	</Target>
+
 
 
 

@@ -25,9 +25,11 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 		
 		<!-- Public NuGet feed for releases -->
 		<PublicPackageFeed>https://api.nuget.org/v3/index.json</PublicPackageFeed>
-		
+
+
+		<PushAfterBuild Condition="'$(Configuration)'=='Release' AND '$(CI)'=='true'">true</PushAfterBuild>				
 		<PushAfterBuild Condition="'$(PushAfterBuild)'==''">false</PushAfterBuild>
-		<PushAfterBuild Condition="'$(Configuration)'=='Release' AND '$(CI)'=='true'">true</PushAfterBuild>		
+
 
 	</PropertyGroup>
 

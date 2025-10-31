@@ -49,8 +49,8 @@ function global:push2nuget
     $solutions = GetSolutions
 
     foreach ($solution in $solutions){
-        Show-Shortcut-Note "dotnet msbuild $solution -verbosity:normal"            
-        dotnet msbuild $solution -verbosity:normal -p:NugetPushKey=$key -p:NugetPushSource=$source -p:Configuration=Release
+        Show-Shortcut-Note "dotnet msbuild $solution -verbosity:normal -p:NugetPushKey=$key -p:NugetPushSource=$source -p:Configuration=Release -p:PushAfterBuild=true"            
+        dotnet msbuild $solution -verbosity:normal -p:NugetPushKey=$key -p:NugetPushSource=$source -p:Configuration=Release -p:PushAfterBuild=true
     }
 }
 

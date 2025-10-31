@@ -1,0 +1,9 @@
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<Import Project="..\gitignore\OpenStrata.DevOps.VSCode.gitignore.props" Condition="Exists('..\gitignore\OpenStrata.DevOps.VSCode.gitignore.props')"     />
+
+	<ItemGroup>
+		<PackageReference Include="OpenStrata.DevOps.VSCode" Version="1.*" Condition="'$(IsVSCodeBuild)'=='true'" PrivateAssets="All"  />
+	</ItemGroup>
+	
+</Project>

@@ -1,0 +1,46 @@
+version: 2
+updates:
+  # Enable version updates for NuGet dependencies
+  - package-ecosystem: "nuget"
+    directory: "/src"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "Open-Strata/maintainers"
+    assignees:
+      - "Open-Strata/maintainers"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      # Ignore patch updates for stable packages
+      - dependency-name: "Microsoft.Build.*"
+        update-types: ["version-update:semver-patch"]
+      - dependency-name: "System.*"
+        update-types: ["version-update:semver-patch"]
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/.github/workflows"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Open-Strata/maintainers"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "github-actions"
+      - "ci-cd"

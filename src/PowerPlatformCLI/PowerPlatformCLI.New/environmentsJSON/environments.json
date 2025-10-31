@@ -1,0 +1,16 @@
+{
+    "$schema": ".openstrata/schemas/devops-config-schema.json",
+    "devops": {
+        "stages": [
+            {
+                "stage": "stage.1",
+                "buildConfiguration": "config.1",
+                "authSettings": {
+                    "authName": "authName.1"
+                }
+            }
+        ],
+        "defaultStage": "stage.1"
+    },
+    "settings": {}
+}

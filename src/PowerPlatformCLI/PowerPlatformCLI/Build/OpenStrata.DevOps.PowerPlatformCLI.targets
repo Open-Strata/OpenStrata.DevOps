@@ -1,0 +1,582 @@
+﻿<!--
+***********************************************************************************************
+OpenStrata.DevOps.PowerPlatformCLI.props
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights reserved.
+***********************************************************************************************
+-->
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<PropertyGroup>
+		<OpenStrataExtIdeDevopsAssemblyFile>$(MSBuildThisFileDirectory)..\Tasks\OpenStrata.Devops.PowerPlatformCLI.dll</OpenStrataExtIdeDevopsAssemblyFile>
+	</PropertyGroup>
+
+	<!-- Tasks -->
+	<UsingTask TaskName="OpenStrata.Devops.PowerPlatformCLI.Tasks.LoadStageIdeDevopsConfig" AssemblyFile="$(OpenStrataExtIdeDevopsAssemblyFile)"     TaskFactory="TaskHostFactory" />	
+
+	<PropertyGroup Label="pac commandline project related properties">
+		<MimicPacProjectBehavior Condition="'$(MimicPacProjectBehavior)' == ''">false</MimicPacProjectBehavior>
+
+		<PacAuthCloudInstance Condition="'$(PacAuthCloudInstance)'==''">Public</PacAuthCloudInstance>
+		<!--<PacAuthProfile Condition="'$(PacAuthProfile)'==''">$(SolutionName)</PacAuthProfile>-->
+		<!--<PacAuthProfile Condition="'$(PacAuthProfile)'==''">$(ProjectName)</PacAuthProfile>-->
+		<PacOrgName Condition="'$(PacOrgName)'==''">$(SolutionName)</PacOrgName>
+
+		<ReposLocationDir Condition="'$(ReposLocationDir)'=='' and '$(SolutionDir)'!=''">$(SolutionDir)..\</ReposLocationDir>
+		<ReposLocationDir Condition="'$(ReposLocationDir)'=='' and '$(ProjectDir)'!=''">$(ProjectDir)..\..\</ReposLocationDir>
+
+        <OpenStrataPropsPath>$([MSBuild]::GetPathOfFileAbove('openstrata.props', '$(MSBuildProjectDirectory)'))</OpenStrataPropsPath>
+
+
+		<DevopsConfigFileName Condition="'$(DevopsConfigFileName)'==''" >environments.json</DevopsConfigFileName>
+		<DevopsConfigFilePath Condition="'$(DevopsConfigFilePath)'==''">$([MSBuild]::GetPathOfFileAbove('$(DevopsConfigFileName)', '$(MSBuildProjectDirectory)'))</DevopsConfigFilePath>
+		<Stage Condition="'$(Stage)'==''" >dev</Stage> 			   
+
+	</PropertyGroup>	
+	
+	<PropertyGroup>
+
+		<LocalDebugPackageFeedPath Condition="'$(LocalDebugPackageFeedPath)' == ''">C:\DebugPackages</LocalDebugPackageFeedPath>
+
+		<PushAfterBuild Condition="'$(PushAfterBuild)'==''">false</PushAfterBuild>
+		<PushAfterBuild Condition="'$(Configuration)'=='Release'">true</PushAfterBuild>
+
+		<DotOstrataPath>$(SolutionDir).ostrata\</DotOstrataPath>
+
+	</PropertyGroup>
+
+	<PropertyGroup Label="pac commandline project related properties">
+		<MimicPacProjectBehavior Condition="'$(MimicPacProjectBehavior)' == ''">false</MimicPacProjectBehavior>
+
+		<PacAuthCloudInstance Condition="'$(PacAuthCloudInstance)'==''">Public</PacAuthCloudInstance>
+		<!--<PacAuthProfile Condition="'$(PacAuthProfile)'==''">$(SolutionName)</PacAuthProfile>-->
+		<!--<PacAuthProfile Condition="'$(PacAuthProfile)'==''">$(ProjectName)</PacAuthProfile>-->
+		<PacOrgName Condition="'$(PacOrgName)'==''">$(SolutionName)</PacOrgName>
+
+		<ReposLocationDir Condition="'$(ReposLocationDir)'=='' and '$(SolutionDir)'!=''">$(SolutionDir)..\</ReposLocationDir>
+		<ReposLocationDir Condition="'$(ReposLocationDir)'=='' and '$(ProjectDir)'!=''">$(ProjectDir)..\..\</ReposLocationDir>
+
+	</PropertyGroup>
+
+
+
+
+	<Target Name="Export"  >
+		<CreateProperty
+			Value="true">
+			<Output
+				TaskParameter="Value"
+				PropertyName="IsOstrataExport" />
+		</CreateProperty>
+		<CallTarget Targets="$(ExportTargets)" />
+	</Target>
+
+	<Target Name="Import"  >
+		<CreateProperty
+			Value="true">
+			<Output
+				TaskParameter="Value"
+				PropertyName="IsOstrataImport" />
+		</CreateProperty>
+		<CallTarget Targets="$(ImportTargets)" />
+	</Target>
+
+	<Target Name="Deploy" DependsOnTargets="Build" >
+		<CallTarget Targets="$(DeployTargets)" />
+	</Target>
+
+	<Target Name="Stage" DependsOnTargets="CheckIfStageControlProject" >
+		<CallTarget Targets="$(StageTargets)" Condition="'$(StageControlProject)'=='true'" />
+	</Target>
+
+	<Target Name="Submit" DependsOnTargets="$(CheckIfSubmitControlProject)" >
+		<CallTarget Targets="$(SubmitTargets)" Condition="'$(SubmitControlProject)'=='true'" />
+	</Target>
+
+	<Target Name="Push" DependsOnTargets="$(PushTargets)" />
+
+	<Target Name="Backup" DependsOnTargets="$(BackupTargets)" />
+	<Target Name="PushPlugin" DependsOnTargets="$(PushPluginTargets)" />
+	<Target Name="UploadSites" DependsOnTargets="$(UploadSitesTargets)" />
+	<Target Name="DownloadSites" DependsOnTargets="$(DownloadSitesTargets)" />
+
+	<Target Name="Debug" DependsOnTargets="$(DebugDependsOn)" />
+
+	<Target Name="EnsureIdeDevopsConfig" Condition="!Exists('$(DevopsConfigFilePath)')">
+
+		<Warning Text="$(DevopsConfigFileName) does not exist.  Creating template file now." />
+
+		<!-- <Copy
+		SourceFiles="$(MSBuildThisFileDirectory)..\templates\ide-devops.config.user.template"
+		DestinationFiles="$(SolutionDir)ide-devops.config.user"
+        /> -->
+
+		<Exec Command="dotnet new os-envjson --stage $(stage)" />
+
+		<Error Text="Unable to continue. Update $(DevopsConfigFileName) and try again" />
+
+	</Target>
+
+	<Target Name="LoadStageIdeDevopsConfig" Condition="Exists('$(DevopsConfigFilePath)')" >
+
+		<Message Text="Loading Stage IdeDevopsConfig" />
+
+		<LoadStageIdeDevopsConfig
+			ConfigPath="$(DevopsConfigFilePath)"
+			Stage="$(Stage)"
+		>
+			<Output TaskParameter="Environment"
+							  PropertyName="PacEnvUrl" />
+			<Output TaskParameter="PacAuthName"
+							  PropertyName="PacAuthProfile" />
+			<Output TaskParameter="Cloud"
+							  PropertyName="PacAuthCloudInstance" />
+			<Output TaskParameter="ApplicationId"
+							  PropertyName="PacAuthAppId" />
+			<Output TaskParameter="TenantId"
+							  PropertyName="PacAuthTenantId" />		
+			<Output TaskParameter="AuthMethod"
+							  PropertyName="AuthMethod" />								  	
+		</LoadStageIdeDevopsConfig>
+		
+	</Target>
+	
+
+	<Target Name="EnsurePacAuthProfile" DependsOnTargets="EnsureIdeDevopsConfig;LoadStageIdeDevopsConfig" >
+
+		<Message Text="Ensuring Authentication profile: $(PacAuthProfile) " Importance="High" />
+
+		<Exec Command="pac auth select -n $(PacAuthProfile)" IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true" >
+			<Output TaskParameter="ExitCode"
+                PropertyName="AuthSelectExitCode" />
+		</Exec>
+
+		<Message Text="Authentication profile $(PacAuthProfile) has been selected." Importance="High" Condition="'$(AuthSelectExitCode)'=='0'" />
+
+		<!--<Exec Command="pac auth clear" Condition="'$(AuthSelectExitCode)'!='0'" />-->
+		<Exec Command="pac auth create -ci $(PacAuthCloudInstance) -n $(PacAuthProfile)"  Condition="'$(AuthSelectExitCode)'!='0'" />
+
+		<Message Text="Authentication profile $(PacAuthProfile) has been created." Importance="Hi gh" Condition="'$(AuthSelectExitCode)'!='0'" />
+
+	</Target>
+
+	<Target Name="PacSelectOrg" DependsOnTargets="EnsurePacAuthProfile" >
+
+		<Message Text="Attempting to select org using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'==''" />
+		<Exec Command="pac org select -env $(PacOrgName)" Condition="'$(PacEnvUrl)'==''"/>
+
+		<Message Text="Attempting to select org using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!=''" />
+		<Exec Command="pac org select -env $(PacEnvUrl)" Condition="'$(PacEnvUrl)'!=''"/>
+
+	</Target>
+
+	<UsingTask TaskName="ParseBackupDate" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<ParameterGroup>
+			<Label ParameterType="System.String" Required="true" />
+			<BackupListOut ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+			<BackupDate ParameterType="System.String" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+
+				BackupDate = string.Empty;
+				bool foundBU = false;
+
+				foreach(ITaskItem ti in BackupListOut)
+				{
+					if (!foundBU) { 
+
+						string[] parts = ti.ItemSpec.Split(new string[] { "   " }, StringSplitOptions.RemoveEmptyEntries);
+
+						if (parts.Length >= 5)
+						{
+
+							if (parts[2].Trim().ToLower() == Label.ToLower())
+							{
+
+								if (DateTime.TryParse(parts[4].Trim(), out DateTime result))
+								{
+									foundBU = true;
+									BackupDate = result.ToString("MM/dd/yyyy hh:mm");
+                            
+								}
+							}
+						}
+
+					}
+				}
+					]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+	<Target Name="GetBackupDate" DependsOnTargets="PacSelectOrg" Returns="$(SolutionBackupDate)" >
+
+		<Message Text="Attempting to select org using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'==''" />
+		<Exec Command="pac org select -env $(PacOrgName)" Condition="'$(PacEnvUrl)'==''"/>
+
+		<Message Text="Attempting to select org using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!=''" />
+		<Exec Command="pac org select -env $(PacEnvUrl)" Condition="'$(PacEnvUrl)'!=''"/>
+
+		<Exec Command="pac admin list-backups -env $(PacOrgName)"
+			  ConsoleToMSBuild="true"
+			  EchoOff="true"
+			  Condition="'$(PacEnvUrl)'==''">
+			<Output TaskParameter="ConsoleOutput" ItemName="BackUpListOut" />
+		</Exec>
+
+		<Exec Command="pac admin list-backups -env $(PacEnvUrl)"
+			  ConsoleToMSBuild="true"
+			  EchoOff="true"
+			  Condition="'$(PacEnvUrl)'!=''">
+			<Output TaskParameter="ConsoleOutput" ItemName="BackUpListOut" />
+		</Exec>
+
+		<ParseBackupDate Label="$(SolutionName)" BackupListOut="@(BackUpListOut)">
+			<Output TaskParameter="BackupDate" PropertyName="SolutionBackupDate" />
+		</ParseBackupDate>
+
+		<Message Text="SolutionBackupDate: $(SolutionBackupDate)"  Importance="High" />
+
+	</Target>
+
+	<!-- <Target Name="GetOrgWho" DependsOnTargets="PacSelectOrg" >
+
+		<Exec Command="pac org who" ConsoleToMSBuild="true">
+			<Output TaskParameter="ConsoleOutput" ItemName="PACOrgWhoOut" />
+		</Exec>
+
+		<ProcessPacOrgWhoOut OrgWhoOut="@(PACOrgWhoOut)">
+			<Output TaskParameter="UniqueName" PropertyName="OrgWhoUniqueName" />
+			<Output TaskParameter="OrgId" PropertyName="OrgWhoOrgId" />
+			<Output TaskParameter="FriendlyName" PropertyName="OrgWhoFriendlyName" />
+			<Output TaskParameter="OrgUrl" PropertyName="OrgWhoOrgUrl" />
+			<Output TaskParameter="UserEmail" PropertyName="OrgWhoUserEmail" />
+			<Output TaskParameter="UserId" PropertyName="OrgWhoUserId" />
+			<Output TaskParameter="EnvironmentId" PropertyName="OrgWhoEnvironmentId" />
+		</ProcessPacOrgWhoOut>
+
+		<Message Text="UniqueName: $(OrgWhoUniqueName)" Importance="High" />
+		<Message Text="OrgId: $(OrgWhoOrgId)" Importance="High" />
+		<Message Text="FriendlyName: $(OrgWhoFriendlyName)" Importance="High" />
+		<Message Text="OrgUrl: $(OrgWhoOrgUrl)" Importance="High" />
+		<Message Text="UserEmail: $(OrgWhoUserEmail)" Importance="High" />
+		<Message Text="UserId: $(OrgWhoUserId)" Importance="High" />
+		<Message Text="EnvironmentId: $(OrgWhoEnvironmentId)" Importance="High" />
+
+	</Target> -->
+
+	<UsingTask TaskName="ProcessPacOrgWhoOut" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<ParameterGroup>
+			<OrgWhoOut ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+			<OrgId ParameterType="System.String" Output="true" />
+			<UniqueName ParameterType="System.String" Output="true" />
+			<FriendlyName ParameterType="System.String" Output="true" />
+			<OrgUrl ParameterType="System.String" Output="true" />
+			<UserEmail ParameterType="System.String" Output="true" />
+			<UserId ParameterType="System.String" Output="true" />
+			<EnvironmentId ParameterType="System.String" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+
+             foreach (ITaskItem ti in OrgWhoOut)
+            {
+                // Use : plus space to ensure URLs are not split
+
+                string[] outItem = ti.ItemSpec.Replace("https://", "https~//").Split(':');
+
+                if (outItem.Length == 2)
+                {
+                    var item = outItem[0].Trim().ToLower();
+                    var val = outItem[1].Trim();
+
+                    switch (item)
+                    {
+
+                        case "org id":
+                            OrgId = val;
+                            break;
+                        case "unique name":
+                            UniqueName = val;
+                            break;
+                        case "friendly name":
+                            FriendlyName = val;
+                            break;
+                        case "org url":
+                            OrgUrl = val.Replace("https~//", "https://");
+                            break;
+                        case "user email":
+                            UserEmail = val;
+                            break;
+                        case "user id":
+                            UserId = val;
+                            break;
+                        case "environment id":
+                            EnvironmentId = val;
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+            }
+
+					]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+
+
+
+	<!--START Target Control Project -->
+
+	<PropertyGroup>
+
+		<StageLockFilePath>$(DotOstrataLockPath)stage.lck</StageLockFilePath>
+		<VersionLockFilePath>$(DotOstrataLockPath)version.lck</VersionLockFilePath>
+		<SubmitLockFilePath>$(DotOstrataLockPath)submit.lck</SubmitLockFilePath>
+		<CleanDependsOn>RemoveTagetControlLocks;$(CleanDependsOn)</CleanDependsOn>
+	</PropertyGroup>
+
+	<Target Name="RemoveTagetControlLocks" >
+		<Delete Files="$(DotOstrataLockPath)*.lck" />
+	</Target>
+
+	<UsingTask TaskName="DeleteStaleTargetControlLockFile" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<ParameterGroup>
+			<TargetLockFilePath ParameterType="System.String" Required="true" />
+			<AfterMinutes ParameterType="System.Int32" Required="true" />
+		</ParameterGroup>
+		<Task>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+
+            if (File.Exists(TargetLockFilePath))
+            {
+                FileInfo fi = new FileInfo(TargetLockFilePath);
+                if (fi.CreationTime < DateTime.Now.AddMinutes(AfterMinutes * -1))
+                    fi.Delete();
+            }
+
+					]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+	<UsingTask TaskName="SetTargetControlProject" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<ParameterGroup>
+			<TargetLockFilePath ParameterType="System.String"  Required="true"  />
+			<TargetControlProject ParameterType="System.Boolean" Output="true" />
+		</ParameterGroup>
+		<Task>
+			<Using Namespace="System"/>
+			<Using Namespace="System.IO"/>
+			<Code Type="Fragment" Language="cs">
+				<![CDATA[
+
+					TargetControlProject = false;
+					if (!File.Exists(TargetLockFilePath))
+					{
+						using (new FileStream(TargetLockFilePath,FileMode.CreateNew))
+						{
+							TargetControlProject = true;	
+						}
+					}
+				]]>
+			</Code>
+		</Task>
+	</UsingTask>
+
+	<Target Name="CheckForStaleStageLock" >
+
+		<DeleteStaleTargetControlLockFile TargetLockFilePath="$(StageLockFilePath)" AfterMinutes="45" />
+
+	</Target>
+
+	<Target Name="CheckIfStageControlProject" DependsOnTargets="CheckForStaleStageLock;EnsureDotOstrata">
+
+		<SetTargetControlProject TargetLockFilePath="$(StageLockFilePath)" >
+			<Output TaskParameter="TargetControlProject"
+                   PropertyName="StageControlProject" />
+		</SetTargetControlProject>
+
+		<Message Text="$(MSBuildProjectName) is the control project" Importance="High" Condition="'$(StageControlProject)'=='true'" />
+		<Message Text="$(MSBuildProjectName) IS NOT the control project" Importance="High" Condition="'$(StageControlProject)'!='true'" />
+
+	</Target>
+
+
+	<!--END Target Control Project -->
+
+	<!--START Refresh Target -->
+
+	<PropertyGroup>
+		<RefreshTargets>Manifest;RefreshGitIgnore;CreateAlmUserProps;CreateGlobalAlmUserProps;CreateStageBuildPropsTargets;UpdateDevops;RemoveDepricated;$(RefreshTargets)</RefreshTargets>
+		<RefreshLockFilePath>$(DotOstrataPath)refresh.lck</RefreshLockFilePath>
+		<PipelineInitTargets>Manifest;Refresh;$(PipelineInitTargets)</PipelineInitTargets>
+	</PropertyGroup>
+
+	<Target Name="TestTarget" DependsOnTargets="$(TestTargets);$(TestTarget)"  />
+
+	<PropertyGroup>
+		<RefreshDependsOn>$(RefreshDependsOn);ideDevopsRefresh</RefreshDependsOn>
+	</PropertyGroup>
+
+	<Target Name="ideDevopsRefresh" DependsOnTargets="CheckIfRefreshControlProject" >
+		<CallTarget Targets="$(RefreshTargets)" Condition="'$(RefreshControlProject)'=='true'" />
+		<CallTarget Targets="Manifest" />
+	</Target>
+
+	<Target Name="CheckForStaleRefreshLock" DependsOnTargets="EnsureDotOstrata" >
+		<DeleteStaleTargetControlLockFile TargetLockFilePath="$(RefreshLockFilePath)" AfterMinutes="3" />
+	</Target>
+
+	<Target Name="CheckIfRefreshControlProject" DependsOnTargets="CheckForStaleRefreshLock;EnsureDotOstrata">
+
+		<SetTargetControlProject TargetLockFilePath="$(RefreshLockFilePath)" >
+			<Output TaskParameter="TargetControlProject"
+                   PropertyName="RefreshControlProject" />
+		</SetTargetControlProject>
+
+		<Message Text="$(MSBuildProjectName) is the control project" Importance="High" Condition="'$(RefreshControlProject)'=='true'" />
+
+		<Message Text="$(MSBuildProjectName) IS NOT the control project" Importance="High" Condition="'$(RefreshControlProject)'!='true'" />
+
+	</Target>
+
+	<Target Name="UpdateDotNetTemplates">
+
+		<Message Text="Ensuring DotNet Templates are Updated"  Importance="High" />
+
+		<Exec Command="dotnet new update" IgnoreExitCode="true"  />
+
+	</Target>
+
+	<Target Name="CreateAlmUserProps" DependsOnTargets="UpdateDotNetTemplates" Condition="'$(ImportAlmUserProps)' == 'true' and !Exists('$(AlmUserTargetsFilePath)') and Exists('$(SolutionDir)')" >
+
+		<Message Text="Running commands to create ALM User Props if they don't exist."  Importance="High"/>
+
+		<Exec Command="dotnet new userbuild"  WorkingDirectory="$(SolutionDir)"  IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true"  />
+
+	</Target>
+
+	<Target Name="CreateGlobalAlmUserProps" DependsOnTargets="UpdateDotNetTemplates"
+			Condition="'$(ImportAlmUserProps)' == 'true' and '$(ImportGlobalAlmUserProps)' == 'true' and !Exists('$(GlobalAlmUserPropsFilePath)')" >
+
+		<Exec Command="dotnet new globaluserbuild" WorkingDirectory="$(ReposLocationDir)"  IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true" />
+
+	</Target>
+
+	<ItemGroup>
+		<DepricatedFilesToRemove Include="$(SolutionDir)Directory.Packages.props" Condition="Exists('$(SolutionDir)Directory.Packages.props')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir)Directory.Packages.targets" Condition="Exists('$(SolutionDir)Directory.Packages.targets')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir)Directory.OpenStrata.Publisher.props" Condition="Exists('$(SolutionDir)Directory.OpenStrata.Publisher.props')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir)Directory.OpenStrata.Publisher.targets" Condition="Exists('$(SolutionDir)Directory.OpenStrata.Publisher.targets')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir)refresh.ps1" Condition="Exists('$(SolutionDir)refresh.ps1')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir).devops\nuget.dev.config" Condition="Exists('$(SolutionDir).devops\nuget.dev.config')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir).devops\nuget.distribute.config" Condition="Exists('$(SolutionDir).devops\nuget.distribute.config')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir).devops\nuget.qa.config" Condition="Exists('$(SolutionDir).devops\nuget.qa.config')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir).devops\nuget.uat.config" Condition="Exists('$(SolutionDir).devops\nuget.uat.config')" />
+		<DepricatedFilesToRemove Include="$(SolutionDir).devops\nuget.dev.config" Condition="Exists('$(SolutionDir).devops\nuget.dev.config')" />
+		<DepricatedDirectoriesToRemove Include="$(SolutionDir).pipelines\" Condition="Exists('$(SolutionDir).pipelines\')" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<RemoveDepricatedTargets>RemoveDepricatedFiles;RemoveDepricatedDirectories;RemoveDepricatedALMProject;$(RemoveDepricatedTargets)</RemoveDepricatedTargets>
+
+	</PropertyGroup>
+
+	<Target Name="RemoveDepricated" DependsOnTargets="$(RemoveDepricatedTargets)" />
+
+	<Target Name="RemoveDepricatedALMProject" Condition="'$(IsPipeline)'!='true'">
+
+		<Exec Command="dotnet sln list" WorkingDirectory="$(SolutionDir)" ConsoleToMSBuild="true" IgnoreExitCode="true">
+			<Output TaskParameter="ConsoleOutput" ItemName="SlnListProjects" />
+		</Exec>
+
+		<Warning Text="The ALM project is deprecated.  Removing it now." Condition="'%(SlnListProjects.Identity)' == 'ALM\ALM.csproj'" />
+
+		<Exec Command="dotnet sln remove alm" WorkingDirectory="$(SolutionDir)" IgnoreExitCode="true" Condition="'%(SlnListProjects.Identity)' == 'ALM\ALM.csproj'" />
+
+		<RemoveDir  Directories="$(SolutionDir)ALM\" Condition="'%(SlnListProjects.Identity)' == 'ALM\ALM.csproj'" />
+
+	</Target>
+
+	<Target Name="RemoveDepricatedDirectories" >
+		<RemoveDir  Directories="@(DepricatedDirectoriesToRemove)" Condition="Exists('$(SolutionDir).pipelines\')" />
+	</Target>
+
+	<Target Name="RemoveDepricatedFiles" >
+		<Delete Files="@(DepricatedFilesToRemove)" TreatErrorsAsWarnings="true" />
+	</Target>
+
+	<Target Name="CommitRefreshChanges" AfterTargets="Refresh" Condition="'$(RefreshControlProject)'=='true' and '$(IsPipeline)'!='true'" >
+
+		<!--TODO:  Check  if anything changes with this command.-->
+
+		<Message Text="CommitRefreshWorking Directory: $(SolutionDir)" Importance="High" />
+
+		<Exec Command="git diff --stat" ConsoleToMSBuild="true" WorkingDirectory="$(SolutionDir)" >
+			<Output TaskParameter="ConsoleOutput" PropertyName="_gitdiffresult" />
+		</Exec>
+
+		<Exec Command="git rm -r --cached ." Condition="'$(_gitdiffresult)'!=''" WorkingDirectory="$(SolutionDir)"    />
+
+		<Exec Command="git add . " Condition="'$(_gitdiffresult)'!=''"  WorkingDirectory="$(SolutionDir)"   />
+
+		<Exec Command='git commit -m "Refreshing repo." ' Condition="'$(_gitdiffresult)'!=''"  WorkingDirectory="$(SolutionDir)"    />
+
+		<Message Text="Refreshed repository" Condition="'$(_gitdiffresult)'!=''"  Importance="High" />
+
+		<Message Text="No commit required." Condition="'$(_gitdiffresult)'==''"  Importance="High" />
+
+	</Target>
+
+	<Target Name="RefreshGitIgnore" DependsOnTargets="UpdateDotNetTemplates" >
+
+		<Message Text="Running commands to apply changes to .gitignore"  Importance="High"/>
+
+		<Exec Command="dotnet new ostratagitignore --force" WorkingDirectory="$(SolutionDir)"  IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true"  />
+
+	</Target>
+
+	<Target Name="CreateStageBuildPropsTargets" DependsOnTargets="UpdateDotNetTemplates" >
+
+		<Exec Command="dotnet new stagebuild" WorkingDirectory="$(SolutionDir)" IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true" />
+
+	</Target>
+
+	<Target Name="UpdateDevops" DependsOnTargets="UpdateDotNetTemplates" >
+
+		<Exec Command="dotnet new ostratadevops --force" WorkingDirectory="$(SolutionDir)" IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true" />
+
+	</Target>
+
+	<Target Name="CreatePipelines" DependsOnTargets="UpdateDotNetTemplates" >
+
+		<Exec Command="dotnet new ostratapipelines --force" WorkingDirectory="$(SolutionDir)" IgnoreExitCode="true" IgnoreStandardErrorWarningFormat="true" />
+
+	</Target>
+
+	<Target Name="PushPcf" DependsOnTargets="$(PushPcfTargets)" />
+
+
+
+
+	<!--END Refresh Target -->
+
+	<!--<Import Project="$(MSBuildThisFileDirectory)GitInfo.targets" Condition="Exists('$(MSBuildThisFileDirectory)GitInfo.targets')"/>-->
+
+	<Import Project="$(MSBuildThisFileDirectory)$(OpenStrataProjectType).targets" Condition="Exists('$(MSBuildThisFileDirectory)$(OpenStrataProjectType).targets')" />
+
+
+
+</Project>

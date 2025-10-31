@@ -1,0 +1,30 @@
+<!--
+***********************************************************************************************
+OpenStrata.IdeDevOps.MSBuild
+strati.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights reserved.
+***********************************************************************************************
+-->
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<PropertyGroup>
+		<ShowHelpTargets>StratiHelp;$(ShowHelpTargets)</ShowHelpTargets>
+	</PropertyGroup>
+
+	<Target Name="StratiHelp" >
+
+		<Message Text="**** Push Strati *************************************" Importance="high" />
+		<Message Text="To push after build, commit and syn changes" Importance="high" />
+		<Message Text="Alternatively, run the following command." Importance="high" />
+		<Message Text="dotnet msbuild -p:PushAfterBuild=true" Importance="high" />
+
+
+	</Target>
+
+
+</Project>

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "OpenStrata",
+  "classifications": [ "Common", "OpenStrata", "Extension", "Version Control" ],
+  "identity": "OpenStrata.DevOps.PowerPlatformCLI.EnvJson",
+  "name": "OpenStrata.DevOps.PowerPlatformCLI EnvJson",
+  "shortName": "os-envjson",
+  "symbols":
+     {
+           "stage":{"type": "parameter", "datatype":"text", "replaces": "stage.1", "defaultValue": "dev" },
+           "configuration":{"type": "parameter", "datatype":"text", "replaces": "config.1", "defaultValue": "Debug" },
+           "authName":{"type": "parameter", "datatype":"text", "replaces": "authName.1" }
+     }
+}

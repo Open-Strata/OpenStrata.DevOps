@@ -1,0 +1,36 @@
+name: Dependabot Auto-merge
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Check if PR is mergeable
+      id: mergeable
+      run: |
+        # Only auto-merge patch and minor updates
+        if [[ "${{ github.event.pull_request.title }}" =~ ^Bump.*from.*to.* ]]; then
+          echo "mergeable=true" >> $GITHUB_OUTPUT
+        else
+          echo "mergeable=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Enable auto-merge for Dependabot PRs
+      if: steps.mergeable.outputs.mergeable == 'true'
+      run: gh pr merge --auto --merge "$PR_URL"
+      env:
+        PR_URL: ${{github.event.pull_request.html_url}}
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

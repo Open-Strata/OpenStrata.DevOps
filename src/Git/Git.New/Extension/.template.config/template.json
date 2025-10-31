@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "OpenStrata",
+  "classifications": [ "Common", "OpenStrata", "Extension", "Version Control", "Git" ],
+  "identity": "OpenStrata.DevOps.Git.Extension",
+  "name": "OpenStrata.DevOps.Git Extension",
+  "shortName": "os-git"
+}

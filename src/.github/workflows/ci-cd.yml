@@ -1,0 +1,152 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, master ]
+  pull_request:
+    branches: [ main, master ]
+  release:
+    types: [ published ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  SOLUTION_PATH: 'src/'
+  BUILD_CONFIGURATION: 'Release'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Required for GitVersion
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          6.0.x
+          8.0.x
+    
+    - name: Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+    
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration ${{ env.BUILD_CONFIGURATION }}
+    
+    - name: Run tests
+      run: dotnet test ${{ env.SOLUTION_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --verbosity normal
+    
+    - name: Pack NuGet packages
+      run: dotnet pack ${{ env.SOLUTION_PATH }} --no-build --configuration ${{ env.BUILD_CONFIGURATION }} --output ./packages
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages-${{ github.run_number }}
+        path: ./packages/*.nupkg
+        retention-days: 30
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ github.run_number }}
+        path: "**/TestResults/*.xml"
+        retention-days: 30
+
+  publish-prerelease:
+    name: Publish Pre-release
+    needs: build-and-test
+    runs-on: windows-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/dev')
+    
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-packages-${{ github.run_number }}
+        path: ./packages
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Publish to NuGet (Prerelease)
+      run: |
+        dotnet nuget push ./packages/*.nupkg `
+          --api-key ${{ secrets.NUGET_API_KEY }} `
+          --source https://api.nuget.org/v3/index.json `
+          --skip-duplicate
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+  publish-release:
+    name: Publish Release
+    needs: build-and-test
+    runs-on: windows-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: nuget-packages-${{ github.run_number }}
+        path: ./packages
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Publish to NuGet (Release)
+      run: |
+        dotnet nuget push ./packages/*.nupkg `
+          --api-key ${{ secrets.NUGET_API_KEY }} `
+          --source https://api.nuget.org/v3/index.json `
+          --skip-duplicate
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    
+    - name: Attach packages to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./packages/*.nupkg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  security-scan:
+    name: Security Scan
+    runs-on: windows-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+    
+    - name: Run security scan
+      run: |
+        dotnet list ${{ env.SOLUTION_PATH }} package --vulnerable --include-transitive
+        dotnet list ${{ env.SOLUTION_PATH }} package --deprecated

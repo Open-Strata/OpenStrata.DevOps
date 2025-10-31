@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "OpenStrata",
+  "classifications": [ "Common", "OpenStrata", "Extension", "Version Control" ],
+  "identity": "OpenStrata.DevOps.PowerPlatformCLI.AddExtension",
+  "name": "OpenStrata.DevOps.PowerPlatformCLI Extension",
+  "shortName": "os-ppcli"
+}

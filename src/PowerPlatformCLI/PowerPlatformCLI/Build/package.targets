@@ -1,0 +1,61 @@
+<!--
+***********************************************************************************************
+OpenStrata.IdeDevOps.MSBuild
+package.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights reserved.
+***********************************************************************************************
+-->
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+
+	<PropertyGroup>
+
+		<DeployTargets>DeployPackage;$(DeployTargets)</DeployTargets>
+
+	</PropertyGroup>
+
+
+	<Target Name="DeployPackage" DependsOnTargets="BackupSolutionDataverseBeforeDeploy;Publish;EnsureDotOstrata;PacSelectOrg">
+		<Message Text="Attempting to Deploy Package" Importance="High" />
+
+		<Exec Command="pac package deploy -c -p $(PackageZipPath) -vdbg -lf ..\package.deploy.log"  />
+
+	</Target>
+
+	<Target Name="BackupSolutionDataverseBeforeDeploy" DependsOnTargets="EnsurePacAuthProfile" Condition="'$(SkipEnvironmentBackup)'!='true'"  >
+
+		<Message Text="Attempting to backup dataverse using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'=='' and '$(SkipEnvironmentBackup)'!='true'" />
+		<Exec Command="pac admin backup -env $(PacOrgName) -l pd_$(SolutionName)" Condition="'$(PacEnvUrl)'=='' and '$(SkipEnvironmentBackup)'!='true'"/>
+
+		<Message Text="Attempting to backup dataverse using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!='' and '$(SkipEnvironmentBackup)'!='true'" />
+		<Exec Command="pac admin backup -env $(PacEnvUrl) -l pd_$(SolutionName)" Condition="'$(PacEnvUrl)'!='' and '$(SkipEnvironmentBackup)'!='true'"/>
+
+	</Target>
+
+	<PropertyGroup>
+		<ShowHelpTargets>PackageHelp;$(ShowHelpTargets)</ShowHelpTargets>
+	</PropertyGroup>
+
+	<Target Name="PackageHelp" >
+
+		<Message Text="**** Deploy Solution Package *************************" Importance="high" />
+		<Message Text="To deploy the package to the dataverse environment, use the following command:" Importance="high" />
+		<Message Text="dotnet msbuild -t:Deploy" Importance="high" />
+
+	</Target>
+
+
+	<Target Name="BackupSolutionDataverseBeforeDeploy" DependsOnTargets="EnsurePacAuthProfile" Condition="'$(SkipEnvironmentBackup)'!='true'"  >
+		<Message Text="Attempting to backup dataverse using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'=='' and '$(SkipEnvironmentBackup)'!='true'" />
+		<Exec Command="pac admin backup -env $(PacOrgName) -l pd_$(SolutionName)" Condition="'$(PacEnvUrl)'=='' and '$(SkipEnvironmentBackup)'!='true'" ContinueOnError="WarnAndContinue"/>
+		<Message Text="Attempting to backup dataverse using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!='' and '$(SkipEnvironmentBackup)'!='true'" />
+		<Exec Command="pac admin backup -env $(PacEnvUrl) -l pd_$(SolutionName)" Condition="'$(PacEnvUrl)'!='' and '$(SkipEnvironmentBackup)'!='true'" ContinueOnError="WarnAndContinue"/>
+	</Target>
+
+
+</Project>

@@ -1,0 +1,143 @@
+<!--
+***********************************************************************************************
+OpenStrata.IdeDevOps.MSBuild
+solution.targets
+
+WARNING:  DO NOT MODIFY this file unless you are knowledgeable about MSBuild and have
+          created a backup copy.  Incorrect changes to this file will make it
+          impossible to load or build your projects from the command-line or the IDE.
+
+Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights reserved.
+***********************************************************************************************
+-->
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<PropertyGroup>
+
+		<ExportTargets>PacExportSolution;$(ExportTargets)</ExportTargets>
+		<ImportTargets>PacStageImportSoluton;$(ImportTargets)</ImportTargets>
+
+		<PushPluginTargets>$(PushPluginTargets);PluginPushPrep</PushPluginTargets>
+
+	</PropertyGroup>	
+	
+	
+	<Target Name="PacExportSolution" DependsOnTargets="EnsureExportIncludes;SpecifyDataverseSolutionUniqueName;EnsureDotOstrata;PacSelectOrg;BackupSolutionDataverse" >
+
+		<Message Text="Publishing customizations before exporting." Importance="High" />
+		<Exec Command="pac solution publish --async" />
+
+		<Message Text="Attempting to export solution: $(DataverseSolutionUniqueName)" Importance="High" />
+
+		<PropertyGroup>
+			<PacSolExportIncludeSwitch></PacSolExportIncludeSwitch>
+			<PacSolExportIncludeSwitch Condition="'@(ExportSolIncludes->Count())'!='0'" >--include @(ExportSolIncludes,',')</PacSolExportIncludeSwitch>
+			<PacSolMapSwitch></PacSolMapSwitch>
+			<PacSolMapSwitch Condition="'$(SolutionPackageMapFilePath)'!='' And Exists('$(SolutionPackageMapFilePath)')" >-m $(SolutionPackageMapFilePath)</PacSolMapSwitch>
+			<ExportZipRelativePath>$([MSBuild]::MakeRelative($(ProjectDir), $(DotOstrataPath)$(DataverseSolutionUniqueName).zip))</ExportZipRelativePath>
+
+		</PropertyGroup>
+
+		<Exec Command="pac solution export -n $(DataverseSolutionUniqueName) -a -p . $(PacSolExportIncludeSwitch) -ow"
+           WorkingDirectory="$(DotOstrataPath)"    />
+
+		<Exec Command="pac solution export -n $(DataverseSolutionUniqueName) -m -a -p . $(PacSolExportIncludeSwitch) -ow"
+            WorkingDirectory="$(DotOstrataPath)"    />
+
+		<!--<Exec Command="pac solution unpack -z $(ExportZipRelativePath) -f $(MSBuildProjectDirectory)\$(SolutionRootPath) -p Both -e Verbose -ad -aw -c $(PacSolMapSwitch)"
+                 />-->
+
+		<Exec Command="pac solution unpack -z $(DataverseSolutionUniqueName).zip -f $(MSBuildProjectDirectory)\$(SolutionRootPath) -p Both -e Verbose -ad -aw -c"
+             WorkingDirectory="$(DotOstrataPath)"      />
+
+	</Target>
+
+	<Target Name="BuildAfterPacExportSolution" AfterTargets="PacExportSolution" DependsOnTargets="Build"  />
+
+	<Target Name="PacStageImportSoluton" DependsOnTargets="Build;" />
+
+	<Target Name="PluginPushPrep" DependsOnTargets="Build;" />
+
+	<Target Name="PacImportSolution" AfterTargets="PowerAppsPackage"
+			DependsOnTargets="EnsureDotOstrata;PacSelectOrg;BackupSolutionDataverse"
+			Condition="'$(IsOstrataImport)'=='true'">
+
+		<Message Text="Attempting to Import solution: $(DataverseSolutionUniqueName)" Importance="High" Condition="'$(IsOstrataImport)'=='true'" />
+
+		<Exec Command="pac solution import -p $(SolutionPackageZipFilePath) -ap -pc . $(PacSolExportIncludeSwitch) -ow"
+           WorkingDirectory="$(DotOstrataPath)" Condition="'$(IsOstrataImport)'=='true'"   />
+
+	</Target>
+
+
+	<PropertyGroup>
+		<BackupTargets>BackupSolutionDataverse;$(BackupTargets)</BackupTargets>
+	</PropertyGroup>
+
+	<Target Name="BackupSolutionDataverse" DependsOnTargets="EnsurePacAuthProfile"  >
+
+		<PropertyGroup>
+			<BackupLabel Condition="'$(BackupLabel)'==''" >$(SolutionName)</BackupLabel>
+		</PropertyGroup>
+		<Message Text="Attempting to backup dataverse using name: $(PacOrgName) " Importance="High"  Condition="'$(PacEnvUrl)'==''" />
+		<Exec Command="pac admin backup -env $(PacOrgName) -l $(BackupLabel)" Condition="'$(PacEnvUrl)'==''"/>
+		<Message Text="Attempting to backup dataverse using url: $(PacEnvUrl) " Importance="High"  Condition="'$(PacEnvUrl)'!=''" />
+		<Exec Command="pac admin backup -env $(PacEnvUrl) -l $(BackupLabel)" Condition="'$(PacEnvUrl)'!=''"/>
+	</Target>
+
+
+	<PropertyGroup>
+		<ShowHelpTargets>SolutionHelp;$(ShowHelpTargets)</ShowHelpTargets>
+	</PropertyGroup>
+
+	<Target Name="SolutionHelp" >
+
+		<Message Text="**** Stage Dataverse Development *********************" Importance="high" />
+		<Message Text="To stage a dataverse environment for a new development task, use the following command:" Importance="high" />
+		<Message Text="dotnet msbuild -t:Stage" Importance="high" />
+
+		<Message Text="**** Export Solution *********************************" Importance="high" />
+		<Message Text="To export the solution from the dataverse environment,use the following command: " Importance="high" />
+		<Message Text="dotnet msbuild -t:Export" Importance="high" />
+
+	</Target>
+
+	<PropertyGroup>
+		<PushPcfTargets>$(PushPcfTargets);PCFReferencesPushUpdate</PushPcfTargets>
+	</PropertyGroup>
+
+	<Target Name='PCFReferencesPushUpdate' DependsOnTargets="OS_GetDataverseSolutionInfo" Condition="'$(IsPipeline)'!='true'" >
+
+		<ItemGroup>
+			<PCFProjects Include="@(ProjectReference)" Condition="'%(Extension)' == '.pcfproj'" />
+		</ItemGroup>
+
+		<MSBuild Projects="@(PCFProjects)"
+				 Targets="PushPCFUpdate"
+				 Properties="Configuration=$(Configuration);SolutionUniqueName=$(DataverseSolutionUniqueName);SolutionPublisherPrefix=$(DataverseSolutionCustomizationPrefix)"
+			     RunEachTargetSeparately="true">
+			<!-- <Output TaskParameter="TargetOutputs" ItemName="ProjectReferenceCopyLocalPaths"/> -->
+		</MSBuild>
+
+	</Target>
+
+	<Target Name="EnsureExportIncludes" Returns="@(ExportSolIncludes)" >
+
+		<ItemGroup>
+			<ExportSolIncludes Include="autonumbering" Condition="'$(IncludeAutoNumbering)'=='true'" />
+			<ExportSolIncludes Include="calendar" Condition="'$(IncludeCalendar)'=='true'" />
+			<ExportSolIncludes Include="customization" Condition="'$(IncludeCustomization)'=='true'" />
+			<ExportSolIncludes Include="emailtracking" Condition="'$(IncludeEmailTracking)'=='true'" />
+			<ExportSolIncludes Include="externalapplications" Condition="'$(IncludeExternalApplications)'=='true'" />
+			<ExportSolIncludes Include="general" Condition="'$(IncludeGeneral)'=='true'" />
+			<ExportSolIncludes Include="isvconfig" Condition="'$(IncludeISVConfig)'=='true'" />
+			<ExportSolIncludes Include="marketing" Condition="'$(IncludeMarketing)'=='true'" />
+			<ExportSolIncludes Include="outlooksynchronization" Condition="'$(IncludeOutlookSynchronization)'=='true'" />
+			<ExportSolIncludes Include="relationshiproles" Condition="'$(IncludeRelationshipRoles)'=='true'" />
+			<ExportSolIncludes Include="sales" Condition="'$(IncludeSales)'=='true'" />
+		</ItemGroup>
+
+	</Target>	
+
+
+</Project>

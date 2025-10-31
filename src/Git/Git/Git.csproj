@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\OpenStrata.DevOps.Common.props" Label="OpenStrata.DevOps.Common.props" />	
+	
+  <PropertyGroup>
+    <AssemblyName>OpenStrata.Devops.Git</AssemblyName>
+    <RootNamespace>OpenStrata.Devops.Git</RootNamespace>
+    <PackageIcon>ICON.png</PackageIcon>
+
+		   <NoWarn>NU5100;NU5111;NU5107;NU5110</NoWarn>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\ICON.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

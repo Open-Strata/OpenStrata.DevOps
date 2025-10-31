@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<!--<Import Project="MSBuild.Shared\MSBuild.Shared.projitems" Label="MSBuild Shared"  />-->
+	<!--<Import Project="MSBuild.Shared\MSBuild.Shared.projitems" Label="MSBuild Shared" Condition="'$(MSBuildProjectName)' != 'MSBuild'  " />-->
+
+	<!--<Import Project="..\Shared\PublisherInfo.Shared\PublisherInfo.Shared.projitems" Label="PubisherInfo" />-->
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+
+		<OpenStrata>OpenStrata.DevOps</OpenStrata>		
+		<AssemblyNamePrefix Condition="'$(DerivativeNamePrefix)'!=''">$(DerivativeNamePrefix).$(OpenStrata)</AssemblyNamePrefix>
+		<AssemblyNamePrefix Condition="'$(DerivativeNamePrefix)'==''">$(OpenStrata)</AssemblyNamePrefix>
+		<RootNamespacePrefix Condition="'$(DerivativeNamePrefix)'!=''">$(DerivativeNamePrefix).$(OpenStrata)</RootNamespacePrefix>
+		<RootNamespacePrefix  Condition="'$(DerivativeNamePrefix)'==''">$(OpenStrata)</RootNamespacePrefix>
+
+		<AssemblyName>$(AssemblyNamePrefix).$(MSBuildProjectName)</AssemblyName>
+		<RootNamespace>$(RootNamespacePrefix).$(MSBuildProjectName)</RootNamespace>
+		
+		<OpenStrataProjectName>$(OpenStrata).$(MSBuildProjectName)</OpenStrataProjectName>
+		<OpenStrataPackageName>$(RootNamespacePrefix).$(MSBuildProjectName)</OpenStrataPackageName>
+		
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<DelayCreationOfNugetPackage>true</DelayCreationOfNugetPackage>
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+		<DevelopmentDependency>true</DevelopmentDependency>
+		
+		<IsTool>true</IsTool>
+
+		<IsMultiTargetingBuild>true</IsMultiTargetingBuild>
+
+
+		<!--<IsTransitiveDevelopmentDependency Condition="'$(MSBuildProjectName)' == 'MSBuild.Publisher'">true</IsTransitiveDevelopmentDependency>-->		
+		
+		<!--<IsTransitiveDevelopmentDependency Condition="'$(MSBuildProjectName)' == 'MSBuild.Stratify'">true</IsTransitiveDevelopmentDependency>-->
+		<!--<IsTransitiveDevelopmentDependency Condition="'$(MSBuildProjectName)' == 'MSBuild.Publisher'">true</IsTransitiveDevelopmentDependency>-->
+
+		<!--Deprecationg STRONG NAME behavior 
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>$(AssemblyName).snk</AssemblyOriginatorKeyFile>
+
+		<SNExe>$(MSBuildProjectDirectory)\..\..\..\tools\sn.exe</SNExe>-->
+
+
+	</PropertyGroup>
+
+	<PropertyGroup Label="DocFxProperties">
+		<!--<OutputFolder>$(MSBuildThisFileDirectory)docfx\$(AssemblyName)\</OutputFolder>-->		
+		<!--<DocfxConfigFile>/docfx.json</DocfxConfigFile>-->
+		<!--<DocumentationFile>$(OutputFolder)$(MSBuildProjectName).xml</DocumentationFile>-->
+		<!--<DocumentationFile>$(MSBuildProjectName).xml</DocumentationFile>-->
+	</PropertyGroup>	
+
+
+	<PropertyGroup>
+		<PrepareForOpenStrataDevBuildDependsOn>EnsureMSBuildPropsAndTargets; $(PrepareForOpenStrataDevBuildDependsOn)</PrepareForOpenStrataDevBuildDependsOn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference
+			Include="Microsoft.Build.Utilities.Core"
+			Version="17.0.0"
+			PrivateAssets="all"
+			IncludeAssets="compile;runtime;build;native;contentfiles;analyzers;buildtransitive"
+			
+			/>
+		<PackageReference
+			Include="Microsoft.Extensions.DependencyInjection"
+			Version="6.0.0"
+			PrivateAssets="all"
+			IncludeAssets="compile;runtime;build;native;contentfiles;analyzers;buildtransitive"			
+			/>
+	</ItemGroup>
+		
+
+	<ItemGroup>
+		<PackageReference Include="OpenStrata.MSBuild.Nuget" Version="1.*" >
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	
+	<!--Items to support building custom tasks-->
+
+	<ItemGroup Condition="'$(SkipOpenStrataMSBuildReference)' != 'true'">
+		<!--<ProjectReference Include="..\MSBuild\MSBuild.csproj" >
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		</ProjectReference>-->
+
+		<!-- <PackageReferenceRequiredForInstall Include="OpenStrata.MSBuild" Version="0.8.*" /> -->
+
+	</ItemGroup>
+
+	<ItemGroup>
+	    <None Include="Build\**\*.*" Pack="true" PackagePath="\build\"  />
+        <None Include="Build\**\*.*" Pack="true" PackagePath="\buildTransitive\" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" />
+		<None Include="Build\**\*.*" Pack="true" PackagePath="\buildMultiTargeting\" Condition="'$(IsMultiTargetingBuild)' == 'true'" />				
+		<!-- <None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\build\$(OpenStrataPackageName).props"  /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\buildTransitive\$(OpenStrataPackageName).props" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).props" Pack="true" PackagePath="\buildMultiTargeting\$(OpenStrataPackageName).props" Condition="'$(IsMultiTargetingBuild)' == 'true'" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\build\$(OpenStrataPackageName).targets" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\buildTransitive\$(OpenStrataPackageName).targets" Condition="'$(IsTransitiveDevelopmentDependency)' == 'true'" /> -->
+		<!-- <None Include="Build\$(OpenStrataProjectName).targets" Pack="true" PackagePath="\buildMultiTargeting\$(OpenStrataPackageName).targets" Condition="'$(IsMultiTargetingBuild)' == 'true'" /> -->
+	
+	
+		<Content Include="Content\**\*" PackagePath="\content\" />
+		
+	</ItemGroup>
+
+	<PropertyGroup>
+		<!--Setting AfterMicrosoftNETSdkTargets to trigger the importing of OpenStrata.Dev.MSBuild.Common.targets when appropriate.-->
+		<AfterMicrosoftNETSdkTargets>
+			$(AfterMicrosoftNETSdkTargets);
+			$(MSBuildThisFileDirectory)OpenStrata.DevOps.Common.targets
+		</AfterMicrosoftNETSdkTargets>
+
+		<GenerateNuspecDependsOn>UpdatePackageReferenceRequiredForInstall; $(GenerateNuspecDependsOn)</GenerateNuspecDependsOn>
+
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<Content Include="templates\**\*" PackagePath="\templates\" />
+		<Compile Remove="templates\**\**" />
+
+	</ItemGroup>
+
+
+
+
+	<ItemGroup>
+		<PackageReference Include="System.Xml.XPath.XDocument" Version="4.3.0"  PrivateAssets="All" />
+	</ItemGroup>
+
+	<PropertyGroup>
+
+		<!-- This target will run when MSBuild is collecting the files to be packaged, and we'll implement it below. This property controls the dependency list for this packaging process, so by adding our custom property we hook ourselves into the process in a supported way. -->
+		<TargetsForTfmSpecificBuildOutput>
+			$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage
+		</TargetsForTfmSpecificBuildOutput>
+		<!-- This property tells MSBuild where the root folder of the package's build assets should be. Because we are not a library package, we should not pack to 'lib'. Instead, we choose 'tasks' by convention. -->
+		<BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+		<!-- NuGet does validation that libraries in a package are exposed as dependencies, but we _explicitly_ do not want that behavior for MSBuild tasks. They are isolated by design. Therefore we ignore this specific warning. -->
+
+         <NoWarn>NU5100;NU5111;NU5107;NU5110</NoWarn>
+
+	</PropertyGroup>
+
+
+	<!-- This is the target we defined above. It's purpose is to add all of our PackageReference and ProjectReference's runtime assets to our package output.  -->
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+		<ItemGroup>
+			<!-- The TargetPath is the path inside the package that the source file will be placed. This is already precomputed in the ReferenceCopyLocalPaths items' DestinationSubPath, so reuse it here. -->
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths)" TargetPath="%(ReferenceCopyLocalPaths.DestinationSubPath)" />
+		</ItemGroup>
+	</Target>
+
+
+</Project>

@@ -1,0 +1,7 @@
+<Project  xmlns='http://schemas.microsoft.com/developer/msbuild/2003' >
+
+	<ItemGroup>
+		<PackageReference Include="OpenStrata.DevOps.PowerPlatformCLI" Version="1.*" Condition=""  PrivateAssets="All" />
+	</ItemGroup>
+	
+</Project>

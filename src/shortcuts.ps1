@@ -30,6 +30,31 @@ function global:GetSolutions
 }
 
 
+function global:push2nuget
+{
+    param(
+        [Parameter(Mandatory=$false)]        
+        [string]$key = $env:NUGET_API_KEY,
+        
+        [Parameter(Mandatory=$false)]        
+        [string]$source = "https://api.nuget.org/v3/index.json"
+    )
+
+    if ([string]::IsNullOrEmpty($key)) {
+        Write-Warning "NuGet API key not provided. Set NUGET_API_KEY environment variable or pass -key parameter."
+        Write-Host "Usage: push2nuget -key <your-api-key>" -ForegroundColor Yellow
+        return
+    }
+
+    $solutions = GetSolutions
+
+    foreach ($solution in $solutions){
+        Show-Shortcut-Note "dotnet msbuild $solution -verbosity:normal"            
+        dotnet msbuild $solution -verbosity:normal -p:NugetPushKey=$key -p:NugetPushSource=$source -p:Configuration=Release
+    }
+}
+
+
 function global:build
 {
 

@@ -201,10 +201,12 @@ Copyright (c) 74Bravo LLC and Contributors. All rights reserved.. All rights res
 
 		<PropertyGroup>
 			<PushPackagePath>$(ProjectDir)$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg</PushPackagePath>
-			<PushSource Condition="'$(CI)'=='true'">$(PublicPackageFeed)</PushSource>
-			<PushSource Condition="'$(CI)'!='true'">$(LocalPackageFeed)</PushSource>
-			<PushApiKey Condition="'$(CI)'=='true'">$(NUGET_API_KEY)</PushApiKey>
-			<PushApiKey Condition="'$(CI)'!='true'">AzureDevOps</PushApiKey>
+		    <PushSource>$(NugetPushSource)</PushSource>			
+			<PushSource Condition="'$(NugetPushSource)'=='' and '$(CI)'=='true'">$(PublicPackageFeed)</PushSource>
+			<PushSource Condition="'$(NugetPushSource)'=='' and '$(CI)'!='true'">$(LocalPackageFeed)</PushSource>
+			<PushApiKey>$(NugetPushKey)</PushApiKey>
+			<PushApiKey Condition="'$(PushApiKey)'=='' and '$(CI)'=='true'">$(NUGET_API_KEY)</PushApiKey>
+			<PushApiKey Condition="'$(PushApiKey)'=='' and '$(CI)'!='true'">AzureDevOps</PushApiKey>
 		</PropertyGroup>
 
 		<!-- Copy to local feed for development -->

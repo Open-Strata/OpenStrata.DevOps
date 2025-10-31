@@ -206,7 +206,7 @@ Contributors will be recognized in:
 
 ## 📄 License
 
-By contributing to OpenStrata.DevOps, you agree that your contributions will be licensed under the [Apple Public Source License 2.0](LICENSE).
+By contributing to OpenStrata.DevOps, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
 
 ## 🙏 Thank You
 

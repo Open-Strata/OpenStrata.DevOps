@@ -82,7 +82,7 @@
 		<Company>Open Strata Initiative</Company>
 		<Product>OpenStrata.Devops.PowerPlatformCLI Templates</Product>
 		<!--<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>-->
-		<PackageLicenseExpression>APSL-2.0</PackageLicenseExpression>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageIcon>ICON.png</PackageIcon>
 		<PackageIconUrl />
 	</PropertyGroup>

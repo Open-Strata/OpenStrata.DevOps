@@ -1,6 +1,6 @@
 # OpenStrata.DevOps
 
-[![License](https://img.shields.io/badge/License-APSL%202.0-blue.svg)](https://opensource.org/licenses/APSL-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![NuGet](https://img.shields.io/nuget/v/OpenStrata.DevOps.AzurePipelines.svg)](https://www.nuget.org/packages/OpenStrata.DevOps.AzurePipelines/)
 [![Build Status](https://github.com/Open-Strata/OpenStrata.DevOps/workflows/CI/badge.svg)](https://github.com/Open-Strata/OpenStrata.DevOps/actions)
 
@@ -164,7 +164,7 @@ We welcome contributions from the community! Please see our [Contributing Guidel
 
 ## 📄 License
 
-This project is licensed under the Apple Public Source License 2.0 - see the [LICENSE](../LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](../LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 

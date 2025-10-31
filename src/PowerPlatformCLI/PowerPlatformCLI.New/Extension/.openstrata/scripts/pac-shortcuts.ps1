@@ -1,7 +1,13 @@
 
 show-shortcut-note 'loading pac-shortcuts'
  
- $Global:PACShortcutsLoaded = $true
+$Global:PACShortcutsLoaded = $true
+
+# Load environments.json utility functions
+if ([System.IO.File]::Exists("$PSScriptRoot\environments-json-utils.ps1"))
+{
+    . $PSScriptRoot\environments-json-utils.ps1
+}
 
 if ([System.IO.File]::Exists("$PSScriptRoot\secrets.ps1"))
 {

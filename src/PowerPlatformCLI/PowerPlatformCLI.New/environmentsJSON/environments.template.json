@@ -1,0 +1,55 @@
+{
+    "$schema": ".openstrata/schemas/devops-config-schema.json",
+    "devops": {
+        "stages": [
+            {
+                "stage": "dev",
+                "buildConfiguration": "Debug",
+                "authSettings": {
+                    "authName": "dev-auth",
+                    "authMethod": "deviceCode",
+                    "environment": "https://yourdev.crm.dynamics.com",
+                    "cloud": "Public"
+                }
+            },
+            {
+                "stage": "qa",
+                "buildConfiguration": "Release",
+                "authSettings": {
+                    "authName": "qa-auth",
+                    "authMethod": "deviceCode",
+                    "environment": "https://yourqa.crm.dynamics.com",
+                    "cloud": "Public"
+                }
+            },
+            {
+                "stage": "uat",
+                "buildConfiguration": "Release",
+                "authSettings": {
+                    "authName": "uat-auth",
+                    "authMethod": "applicationId",
+                    "environment": "https://youruat.crm.dynamics.com",
+                    "cloud": "Public",
+                    "tenant": "12345678-1234-1234-1234-123456789abc",
+                    "applicationId": "87654321-4321-4321-4321-210987654321"
+                }
+            },
+            {
+                "stage": "prod",
+                "buildConfiguration": "Release",
+                "authSettings": {
+                    "authName": "prod-auth",
+                    "authMethod": "githubFederated",
+                    "environment": "https://yourprod.crm.dynamics.com",
+                    "cloud": "Public",
+                    "tenant": "12345678-1234-1234-1234-123456789abc",
+                    "applicationId": "87654321-4321-4321-4321-210987654321"
+                }
+            }
+        ],
+        "defaultStage": "dev"
+    },
+    "settings": {
+        "_comment": "Power Platform environment-specific settings can be added here"
+    }
+}

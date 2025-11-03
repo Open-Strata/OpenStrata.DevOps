@@ -52,7 +52,7 @@ function global:Set-OSEnvironmentsJson {
     try {
         $json = $Configuration | ConvertTo-Json -Depth 10 -EscapeHandling EscapeNonAscii
         $json | Set-Content -Path $Global:EnvironmentsJsonPath -Encoding UTF8
-        Write-Host "✅ environments.json updated successfully" -ForegroundColor Green
+        Write-Host "[SUCCESS] environments.json updated successfully" -ForegroundColor Green
     }
     catch {
         Write-Error "Failed to save environments.json: $_"
@@ -71,7 +71,7 @@ function global:Test-OSEnvironmentsJson {
     
     $config = Get-OSEnvironmentsJson
     if (-not $config) {
-        Write-Error "❌ Cannot validate - environments.json not found or invalid"
+        Write-Error "[ERROR] Cannot validate - environments.json not found or invalid"
         return $false
     }
     
@@ -79,38 +79,38 @@ function global:Test-OSEnvironmentsJson {
     
     # Check required sections
     if (-not $config.devops) {
-        Write-Warning "⚠️  Missing 'devops' section"
+        Write-Warning "[WARNING] Missing 'devops' section"
         $isValid = $false
     }
     
     if (-not $config.devops.stages -or $config.devops.stages.Count -eq 0) {
-        Write-Warning "⚠️  Missing or empty 'devops.stages' array"
+        Write-Warning "[WARNING] Missing or empty 'devops.stages' array"
         $isValid = $false
     }
     
     # Validate each stage
     foreach ($stage in $config.devops.stages) {
         if (-not $stage.stage) {
-            Write-Warning "⚠️  Stage missing 'stage' property"
+            Write-Warning "[WARNING] Stage missing 'stage' property"
             $isValid = $false
         }
         
         if (-not $stage.authSettings) {
-            Write-Warning "⚠️  Stage '$($stage.stage)' missing 'authSettings'"
+            Write-Warning "[WARNING] Stage '$($stage.stage)' missing 'authSettings'"
             $isValid = $false
         }
         
         if ($stage.authSettings -and -not $stage.authSettings.authName) {
-            Write-Warning "⚠️  Stage '$($stage.stage)' missing 'authName'"
+            Write-Warning "[WARNING] Stage '$($stage.stage)' missing 'authName'"
             $isValid = $false
         }
     }
     
     if ($isValid) {
-        Write-Host "✅ environments.json validation passed" -ForegroundColor Green
+        Write-Host "[SUCCESS] environments.json validation passed" -ForegroundColor Green
     }
     else {
-        Write-Host "❌ environments.json validation failed" -ForegroundColor Red
+        Write-Host "[ERROR] environments.json validation failed" -ForegroundColor Red
     }
     
     return $isValid
@@ -214,11 +214,11 @@ function global:New-OSEnvironmentStage {
     }
     
     if ($existingStageIndex -ge 0) {
-        Write-Host "⚠️  Stage '$StageName' already exists. Updating..." -ForegroundColor Yellow
+        Write-Host "[WARNING] Stage '$StageName' already exists. Updating..." -ForegroundColor Yellow
         $config.devops.stages[$existingStageIndex] = $stage
     }
     else {
-        Write-Host "➕ Adding new stage '$StageName'" -ForegroundColor Green
+        Write-Host "[ADD] Adding new stage '$StageName'" -ForegroundColor Green
         $config.devops.stages += $stage
     }
     
@@ -252,12 +252,12 @@ function global:Remove-OSEnvironmentStage {
     $config.devops.stages = $config.devops.stages | Where-Object { $_.stage -ne $StageName }
     
     if ($config.devops.stages.Count -lt $originalCount) {
-        Write-Host "🗑️  Removed stage '$StageName'" -ForegroundColor Green
+        Write-Host "[REMOVE] Removed stage '$StageName'" -ForegroundColor Green
         
         # Update default stage if it was removed
         if ($config.devops.defaultStage -eq $StageName -and $config.devops.stages.Count -gt 0) {
             $config.devops.defaultStage = $config.devops.stages[0].stage
-            Write-Host "🔄 Updated default stage to '$($config.devops.defaultStage)'" -ForegroundColor Yellow
+            Write-Host "[UPDATE] Updated default stage to '$($config.devops.defaultStage)'" -ForegroundColor Yellow
         }
         
         Set-OSEnvironmentsJson -Configuration $config
@@ -283,17 +283,17 @@ function global:Get-OSEnvironmentStages {
         return
     }
     
-    Write-Host "`n📋 Environment Stages Configuration" -ForegroundColor Cyan
-    Write-Host "═══════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "`n[CONFIG] Environment Stages Configuration" -ForegroundColor Cyan
+    Write-Host "=======================================" -ForegroundColor Cyan
     
     if ($config.devops.defaultStage) {
-        Write-Host "🎯 Default Stage: $($config.devops.defaultStage)" -ForegroundColor Green
+        Write-Host "[DEFAULT] Default Stage: $($config.devops.defaultStage)" -ForegroundColor Green
         Write-Host ""
     }
     
     foreach ($stage in $config.devops.stages) {
         $isDefault = if ($stage.stage -eq $config.devops.defaultStage) { " (default)" } else { "" }
-        Write-Host "🔧 Stage: $($stage.stage)$isDefault" -ForegroundColor Yellow
+        Write-Host "[STAGE] Stage: $($stage.stage)$isDefault" -ForegroundColor Yellow
         Write-Host "   Auth Name: $($stage.authSettings.authName)"
         Write-Host "   Auth Method: $($stage.authSettings.authMethod)"
         Write-Host "   Environment: $($stage.authSettings.environment)"
@@ -334,7 +334,7 @@ function global:Set-OSDefaultStage {
     
     $config.devops.defaultStage = $StageName
     Set-OSEnvironmentsJson -Configuration $config
-    Write-Host "🎯 Default stage set to '$StageName'" -ForegroundColor Green
+    Write-Host "[DEFAULT] Default stage set to '$StageName'" -ForegroundColor Green
 }
 
 function global:Initialize-OSEnvironmentsJson {
@@ -380,8 +380,8 @@ function global:Initialize-OSEnvironmentsJson {
     }
     
     Set-OSEnvironmentsJson -Configuration $config
-    Write-Host "🚀 Created environments.json with basic configuration" -ForegroundColor Green
-    Write-Host "💡 Edit the environment URL and other settings as needed" -ForegroundColor Cyan
+    Write-Host "[SUCCESS] Created environments.json with basic configuration" -ForegroundColor Green
+    Write-Host "[INFO] Edit the environment URL and other settings as needed" -ForegroundColor Cyan
 }
 
 # Helper function for displaying environment info
@@ -395,22 +395,22 @@ function global:Show-OSEnvironmentInfo {
         Show-OSEnvironmentInfo
     #>
     
-    Write-Host "`n🌟 OpenStrata DevOps Environment Configuration" -ForegroundColor Magenta
-    Write-Host "════════════════════════════════════════════════" -ForegroundColor Magenta
+    Write-Host "`n[OPENSTRATA] OpenStrata DevOps Environment Configuration" -ForegroundColor Magenta
+    Write-Host "================================================" -ForegroundColor Magenta
     
     if (Test-Path $Global:EnvironmentsJsonPath) {
-        Write-Host "📄 File: $Global:EnvironmentsJsonPath" -ForegroundColor Green
+        Write-Host "[FILE] File: $Global:EnvironmentsJsonPath" -ForegroundColor Green
         
         if (Test-Path $Global:SchemaPath) {
-            Write-Host "📋 Schema: $Global:SchemaPath" -ForegroundColor Green
+            Write-Host "[SCHEMA] Schema: $Global:SchemaPath" -ForegroundColor Green
         }
         else {
-            Write-Host "⚠️  Schema: $Global:SchemaPath (not found)" -ForegroundColor Yellow
+            Write-Host "[WARNING] Schema: $Global:SchemaPath (not found)" -ForegroundColor Yellow
         }
         
         Get-OSEnvironmentStages
         
-        Write-Host "🛠️  Available Commands:" -ForegroundColor Cyan
+        Write-Host "[COMMANDS] Available Commands:" -ForegroundColor Cyan
         Write-Host "   Get-OSEnvironmentStages     - List all stages"
         Write-Host "   New-OSEnvironmentStage      - Add new stage"
         Write-Host "   Remove-OSEnvironmentStage   - Remove stage"
@@ -419,8 +419,8 @@ function global:Show-OSEnvironmentInfo {
         Write-Host "   Initialize-OSEnvironmentsJson - Create new file"
     }
     else {
-        Write-Host "❌ environments.json not found" -ForegroundColor Red
-        Write-Host "💡 Run 'Initialize-OSEnvironmentsJson' to create one" -ForegroundColor Cyan
+        Write-Host "[ERROR] environments.json not found" -ForegroundColor Red
+        Write-Host "[INFO] Run 'Initialize-OSEnvironmentsJson' to create one" -ForegroundColor Cyan
     }
 }
 
@@ -430,5 +430,5 @@ Set-Alias -Name "env-stages" -Value "Get-OSEnvironmentStages" -Scope Global
 Set-Alias -Name "env-test" -Value "Test-OSEnvironmentsJson" -Scope Global
 Set-Alias -Name "env-init" -Value "Initialize-OSEnvironmentsJson" -Scope Global
 
-Write-Host "✅ environments.json management functions loaded" -ForegroundColor Green
-Write-Host "💡 Type 'env-info' or 'Show-OSEnvironmentInfo' to get started" -ForegroundColor Cyan
+Write-Host "[SUCCESS] environments.json management functions loaded" -ForegroundColor Green
+Write-Host "[INFO] Type 'env-info' or 'Show-OSEnvironmentInfo' to get started" -ForegroundColor Cyan
